@@ -20,6 +20,5 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("",include('voyageino.urls')),
-    path(r'^currencies/', include('currencies.urls')),
 ]+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 #handler404 = 'voyageino.views.page_not_found_view'
