@@ -1,0 +1,209 @@
+{%extends "template.html"%}
+{%block inner_page%}
+{%load static%}
+<div class="inner-banner">
+    {%load static%}
+    <img class="center-image" src="{% static categorie.image %}" alt="">
+    <div class="vertical-align">
+        <div class="container">
+            <h2 class="color-white">all tours in {{title}}</h2>
+            <h4 class="color-white">We found: <span>{{total}}</span> tours</h4>
+        </div>
+    </div>
+</div>
+<div class="list-wrapper bg-grey-2">
+    <div class="container">
+        <div class="row">
+          <div class="col-xs-12 col-sm-4 col-md-3">
+              <div class="sidebar bg-white clearfix">
+                  <form action="/search" method="GET">
+                    {%csrf_token%}
+                <div class="sidebar-block">
+                    <h4 class="sidebar-title color-dark-2">search</h4>
+                    <div class="search-inputs">
+                        <div class="form-block clearfix">
+                            <div class="input-style-1 b-50 color-3">
+                                <img src="{%static 'img/loc_icon_small_grey.png' %}" alt="">
+                                <input list="cities" placeholder="Where do you want to go?" name="destination" value="" autocomplete="off">
+                                <datalist id="cities">
+                                    {%for city in cities%}
+                                    <option value="{{city}}"></option>
+                                    {%endfor%}
+                                    
+                                </datalist>
+                            </div>
+                        </div>							
+                        <div class="form-block clearfix">
+                            <div class="input-style-1 b-50 color-3">
+                                <img src="{%static 'img/calendar_icon_grey.png' %}" alt="">
+                                <input type="text" placeholder="Check In" value="{{from_date}}" min ="{{from_date}}" class="datepicker from_date" name="from_date">
+                            </div>					
+                        </div>
+                        <div class="form-block clearfix">
+                            <div class="input-style-1 b-50 color-3">
+                                <img src="{%static 'img/calendar_icon_grey.png' %}" alt="">
+                                <input type="text" placeholder="Check Out" value="{{to_date}}" min="{{from_date}}" class="datepicker to_date" name="to_date" >
+                            </div>					
+                        </div>
+                    </div>
+                    <!-- <input type="submit" class="c-button b-40 bg-dr-blue-2 hv-dr-blue-2-o" value="search">				 -->
+                </div>
+                <div class="sidebar-block">
+                 <h4 class="sidebar-title color-dark-2">categories</h4>
+                 <div class="sidebar-rating">
+                    {%for cat in categories%}
+                    <div class="input-entry color-5">
+                        {%if cat.id in checked %}
+                        <input class="checkbox-form" id="ref-{{cat.id}}" type="checkbox" name="checkbox" value="{{cat.id}}" checked>
+                        {%else%}
+                        <input class="checkbox-form" id="ref-{{cat.id}}" type="checkbox" name="checkbox" value="{{cat.id}}">
+                        {%endif%}
+                        <label class="clearfix" for="ref-{{cat.id}}" >
+                            <span class="sp-check"><i class="fa fa-check"></i></span>
+                            <span class="checkbox-text">{{cat.name}}</span>
+                        </label>
+                    </div>
+                    {%endfor%}
+                    <input type="hidden" name="categories" value="{{categorie.id}}" id="categories">																
+                 </div>											
+             </div>	
+                <div class="sidebar-block">
+                    <h4 class="sidebar-title color-dark-2">price range</h4>
+                    <div class="slider-range color-3 clearfix" data-counter="$" data-position="start" data-from="{{min_price_value}}" data-to="{{max_price_value}}" data-min="{{min_price}}" data-max="{{max_price}}">
+                        <div class="range"></div>
+                        <input type="text" name="min_price" class="amount-start" readonly value="{{min_price_value}}">
+                        <input type="text" name="max_price" class="amount-end" readonly value="{{max_price_value}}">						
+                    </div>
+                </div>
+                <div class="sidebar-block">
+                    <h4 class="sidebar-title color-dark-2">Duration </h4>
+                    <div class="slider-range color-3 clearfix" data-counter=" NIGHT" data-position="end" data-from="{{min_duration_value}}" data-to="{{max_duration_value}}" data-min="{{min_duration}}" data-max="{{max_duration}}">
+                        <div class="range"></div>
+                        <input type="text" name="min_duration" class="amount-start" readonly value="0 NIGHT">
+                        <input type="text" name="max_duration" class="amount-end" readonly value="7 NIGHT">						
+                    </div>
+                    <input type="submit" class="c-button b-40 bg-dr-blue-2 hv-dr-blue-2-o" value="search">				
+                </div>
+            </form>          
+              </div>
+          </div>
+          <div class="col-xs-12 col-sm-8 col-md-9">
+            <div class="list-header clearfix">
+                <div class="drop-wrap drop-wrap-s-4 color-4 list-sort">
+                  <div class="drop">
+                     <b>Sort by price</b>
+                        <a href="#" class="drop-list"><i class="fa fa-angle-down"></i></a>
+                        <span>
+                            <a href="#">ASC</a>
+                            <a href="#">DESC</a>
+                        </span>
+                   </div>
+                </div>
+                <div class="drop-wrap drop-wrap-s-4 color-4 list-sort">
+                  <div class="drop">
+                     <b>Sort by ranking</b>
+                        <a href="#" class="drop-list"><i class="fa fa-angle-down"></i></a>
+                        <span>
+                            <a href="#">ASC</a>
+                            <a href="#">DESC</a>
+                        </span>
+                   </div>
+                </div>
+                <div class="list-view-change">
+                    <div class="change-grid color-1 fr active"><i class="fa fa-th"></i></div>
+                    <div class="change-list color-1 fr"><i class="fa fa-bars"></i></div>
+                    <div class="change-to-label fr color-grey-8">View:</div>
+                </div>
+            </div>
+              <div class="grid-content clearfix">
+                {%for tour in Tours%}
+                <div class="list-item-entry">
+                    <div class="hotel-item style-9 bg-white">
+                        <div class="table-view">
+                              <div class="radius-top cell-view">
+                                   <a href="/tour/{{tour.id}}"><img src="{{tour.image}}" alt=""></a>      	 	 
+                              </div>
+                              <div class="title hotel-middle clearfix cell-view">
+                                <div class="date list-hidden">
+                                    <div class="tour-info-line clearfix">
+                                        <div class="tour-info fl">
+                                               <img src="{% static 'img/calendar_icon_grey.png' %}" alt="">
+                                               <span class="font-style-2 color-grey-3">{{tour.duree}} Days</strong></span>
+                                           </div>
+                                        <div class="tour-info fl">
+                                            
+                                               <img src="{% static 'img/loc_icon_small_grey.png' %}" alt="">
+                                               <span class="font-style-2 color-grey-3">{{tour.get_cities.first}}</span>
+                                           </div>						
+                                    </div>
+                                </div>
+                                <div class="date grid-hidden">
+                                    <div class="tour-info-line clearfix">
+                                        <div class="tour-info fl">
+                                               <img src="{% static 'img/calendar_icon_grey.png' %}" alt="">
+                                               <span class="font-style-2 color-grey-3">{{tour.duree}} Days</strong></span>
+                                           </div>
+                                        <div class="tour-info fl">
+                                            
+                                               <img src="{% static 'img/loc_icon_small_grey.png' %}" alt="">
+                                               <span class="font-style-2 color-grey-3">{{tour.get_cities.first}}</span>
+                                           </div>						
+                                    </div>
+                                </div>
+                               <h4 class="list-hidden"><b>{{tour.title}}</b></h4>
+                               <h4 class="grid-hidden"><b>{{tour.title}}</b></h4>
+                                  <div class="rate-wrap">
+                                     <div class="rate">
+                                     <span class="fa fa-star color-yellow"></span>
+                                     <span class="fa fa-star color-yellow"></span>
+                                     <span class="fa fa-star color-yellow"></span>
+                                     <span class="fa fa-star color-yellow"></span>
+                                     <span class="fa fa-star color-yellow"></span>
+                                   </div>
+                                   <i>{{tour.review_set.count}} reviews</i> 
+                                </div> 
+                            <div class="hotel-person color-dark-2 list-hidden">from <span class="color-blue">${{tour.price}}</span></div>
+                             <p class="f-14 grid-hidden">{{tour.printable_cities}}</p>
+                         </div>
+                            <div class="title hotel-right clearfix cell-view grid-hidden">
+                                  <div class="rate-wrap">
+                                      <i>{{tour.review_set.count}} reviews</i>
+                                      <div class="rate">
+                                        <span class="fa fa-star color-yellow"></span>
+                                        <span class="fa fa-star color-yellow"></span>
+                                        <span class="fa fa-star color-yellow"></span>
+                                        <span class="fa fa-star color-yellow"></span>
+                                        <span class="fa fa-star color-yellow"></span>
+                                    </div>
+                                </div>						             
+                                <div class="hotel-person color-dark-2">from <span class="color-blue">${{tour.price}}</span></div>
+                                <img class="hotel-right-logo {{tour.operator.name}}" src="{%static tour.operator.photo%}" alt="">
+                            </div>						            
+                        </div>
+                    </div> 						
+                  </div>
+                  {%endfor%}
+              </div>
+
+              <div class="c_pagination clearfix padd-120">
+                {%if precedent%}
+              <a href="/categorie/{{categorie.id}}/{{precedent}}" class="c-button b-40 bg-dr-blue-2 hv-dr-blue-2-o fl">prev page</a>
+              {%endif%}
+              {%if suivant%}
+              <a href="/categorie/{{categorie.id}}/{{suivant}}" class="c-button b-40 bg-dr-blue-2 hv-dr-blue-2-o fr">next page</a>
+              {%endif%}
+              <ul class="cp_content color-3">
+                  {%for page in pages%}
+                  {%if page == selected%}
+                  <li class="active"><a href="/categorie/{{categorie.id}}/{{page}}">{{page}}</a></li>
+                  {%else%}
+                  <li ><a href="/categorie/{{categorie.id}}/{{page}}">{{page}}</a></li>
+                  {%endif%}
+                  {%endfor%}
+              </ul>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

@@ -1,0 +1,45 @@
+{%extends "template.html"%}
+{%block inner_page %}
+{%load static%}
+<div class="main-wraper bg-grey-2 padd-120">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-8 col-sm-offset-2">
+				<div class="second-title op-titre-page">
+					<h4 class="subtitle color-red-3 underline">operators</h4>
+				</div>
+			</div>
+		</div>
+		<div class="price-block">
+			{%for op in operator%}
+			<div class="pb_entry">
+				<div class="table-view">
+					<div class="pb_header bg-white cell-view">
+						<img src="{%static op.photo %}" alt="">
+					</div>
+					{% for tour in op.choosed %}
+					<div class="pb_content bg-grey-6 cell-view">
+						<a href='tour/{{tour.id}}'><div class="pb-title color-dark-2"><p>{{tour.title}}</p></div></a>
+						<div class="pb-price color-dark-2">from <span class="color-red-3">${{tour.price}}</span></div>
+						<div class="pb-text color-grey-3"><img class="location-icon" src="{%static 'img/loc_icon_small_grey.png'%}" alt="">{{tour.get_cities.count}} Cities</div>
+						<div class="pb-text color-grey-3"><img class="plane-icon" src="{%static 'img/plane.png'%}" alt=""> {{tour.depart_set.count}} Departures</div>
+					</div>
+					{%endfor%}
+					<div class="pb_check bg-white cell-view">
+						<div class="pb_check_title color-dark-2">{{op.name}}</div>
+						<a href="/operator/{{op.id}}" class="c-button bg-red-3 hv-red-3-o delay-2 b-40"><span>view all</span></a>
+					</div>															
+				</div>			
+			</div>
+			{%endfor%}			
+		</div>
+	  </div>
+</div>
+
+{%endblock%}
+
+{%block scripts%}
+<script>
+$("header").attr("id","black-header");
+</script>
+{%endblock%}

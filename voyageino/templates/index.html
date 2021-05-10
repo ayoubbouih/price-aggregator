@@ -1,0 +1,166 @@
+{%extends "template.html"%}
+{%block inner_page %}
+  <div class="full-height">
+     <div class="clip">
+		 {%load static%}
+		<div class="bg bg-bg-chrome" style="background:linear-gradient(to bottom,#303030, transparent) ,url({%static 'img/home_10/hero.jpg' %}); background-size:cover;">
+		</div>
+	 </div>
+	<div class="vertical-align">
+		 <div class="container">
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+				   <div class="main-title style-6">
+						<h4>Over 90 000 flights for you choice</h4>
+						<h1>Choose flight</h1>
+						<form action="/search" method="GET">
+							<div class="row no-padd">
+								<div class="col-lg-10 col-lg-offset-1 col-md-12 col-sm-12 col-md-offset-0">
+									<div class="input-style-1 min-324">
+										<img src="{% static 'img/loc_icon_small.png' %}" alt="">
+										<input type="text" placeholder="Enter a city name" name="destination" autocomplete="off">
+									</div>
+									<div class="input-style-1 min-204">
+										<img src="{% static 'img/calendar_icon.png' %}" alt="">
+										<input type="text" placeholder="Check in" name="from_date" min="{{from_date}}" class="datepicker from_date" autocomplete="off">
+									</div>
+									<div class="input-style-1 min-204">
+										<img src="{% static 'img/calendar_icon.png' %}" alt="">
+										<input type="text" placeholder="Check out" name="to_date" min="{{from_date}}" class="datepicker to_date" autocomplete="off">
+									</div>
+									<div class="submit">
+									<input class="c-button bg-red-3 hv-transparent" type="submit" value="search now">
+									</div>
+								</div>
+							</div>
+						</form>
+				   </div>  	  
+				</div>
+			</div>
+		 </div>
+	</div>
+  </div>
+
+<!--TOUR-ITEM-->
+<div class="main-wraper padd-90">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-8 col-sm-offset-2">
+				<div class="second-title">
+					<h4 class="subtitle color-red-3 underline">popular</h4>
+					<h2>Most popular Tours</h2>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="top-baner arrows">
+				<div class="swiper-container fly-slider" data-autoplay="0" data-loop="0" data-speed="1000" data-slides-per-view="responsive" data-mob-slides="1" data-xs-slides="2" data-sm-slides="2" data-md-slides="3" data-lg-slides="4" data-add-slides="4">
+					  <div class="swiper-wrapper">
+						{%for tour in tours%}
+						<div class="swiper-slide">
+					        <div class="hotel-item style-9">
+					          	<div class="radius-top">
+					          	 	<img src="{{tour.image}}" alt="">	          	 	 
+					          	</div>
+					          	<div class="title">
+						            <div class="date list-hidden">
+										<div class="tour-info-line clearfix">
+											<div class="tour-info fl">
+												   <img src="{% static 'img/calendar_icon_grey.png' %}" alt="">
+												   <span class="font-style-2 color-grey-3">{{tour.duree}} Days</strong></span>
+											   </div>
+											<div class="tour-info fl">
+												
+												   <img src="{% static 'img/loc_icon_small_grey.png' %}" alt="">
+												   <span class="font-style-2 color-grey-3">{{tour.get_cities.first}}</span>
+											   </div>						
+										</div>
+									</div>
+									<h4><b>{{tour.title}}</b></h4>
+						            <h5>from <strong class="color-red-3">${{tour.price}}</strong></h5>
+					          	    <div class="clearfix">
+							            <a href="/tour/{{tour.id}}" class="c-button b-40 bg-red-3 hv-red-3-o fl">view more</a>
+						            </div>
+					            </div>
+					        </div>
+						</div>
+						{%endfor%}												  
+					  </div>
+					<div class="pagination poin-style-2"></div>  
+				</div>
+				<div class="swiper-arrow-left offers-arrow color-4"><span class="fa fa-angle-left"></span></div>
+				<div class="swiper-arrow-right offers-arrow color-4"><span class="fa fa-angle-right"></span></div>
+			</div>
+		</div>		
+	</div>
+</div>
+
+<!-- TOUR-BLOCK -->
+<!-- TOUR-OPERATORS -->
+<div class="main-wraper bg-grey-2 padd-120">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-8 col-sm-offset-2">
+				<div class="second-title">
+					<h4 class="subtitle color-red-3 underline">operators</h4>
+					<h2>Top operators around the world</h2>
+				</div>
+			</div>
+		</div>
+		<div class="price-block">
+			{%for op in operator%}
+			<div class="pb_entry">
+				<div class="table-view">
+					<div class="pb_header bg-white cell-view">
+						<img src="{%static op.photo %}" alt="">
+					</div>
+					{% for tour in op.choosed %}
+					<div class="pb_content bg-grey-6 cell-view">
+						<a href='tour/{{tour.id}}'><div class="pb-title color-dark-2"><p>{{tour.title}}</p></div></a>
+						<div class="pb-price color-dark-2">from <span class="color-red-3">${{tour.price}}</span></div>
+						<div class="pb-text color-grey-3"><img class="location-icon" src="{%static 'img/loc_icon_small_grey.png'%}" alt="">{{tour.get_cities.count}} Cities</div>
+						<div class="pb-text color-grey-3"><img class="plane-icon" src="{%static 'img/plane.png'%}" alt=""> {{tour.depart_set.count}} Departures</div>
+					</div>
+					{%endfor%}
+					<div class="pb_check bg-white cell-view">
+						<div class="pb_check_title color-dark-2">{{op.name}}</div>
+						<a href="operator/{{op.id}}" class="c-button bg-red-3 hv-red-3-o delay-2 b-40"><span>view all</span></a>
+					</div>															
+				</div>			
+			</div>
+			{%endfor%}			
+		</div>
+	  </div>
+</div>
+<div class="main-wraper padd-90">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-8 col-sm-offset-2">
+				<div class="second-title">
+					<h4 class="subtitle color-red-3 underline">categories</h4>
+					<h2>our tour categories</h2>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			{%for cat in categorie%}
+			<div class="col-xs-12 col-lg-4">
+				<div class="city-entry style-2 bg-grey-2">
+					<a href="/categorie/{{cat.id}}">
+						<div class="tour-block tour-block-s-5 hover-red-3 underline-block">
+							<div class="tour-layer delay-1"></div>
+							<img src="{%static cat.image%}" class="res-img" alt="">
+							<div class="tour-caption">
+								<div class="vertical-align">
+									<h3 class="underline hover-it">{{cat.name}}</h3>
+								</div>
+							</div>
+						</div>
+					</a>
+				</div>				
+			</div>
+			{%endfor%}
+		</div>		
+	</div>
+</div> 
+{%endblock%} 

@@ -1,0 +1,226 @@
+{%extends "template.html"%}
+{%block inner_page %}
+{%load static%}
+<div class="detail-wrapper" style="padding-top: 100px;">
+	<div class="container">
+		<div class="detail-header">
+			<div class="row">
+				<div class="col-xs-12 col-sm-8">
+					<h2 class="detail-title color-dark-2">{{tour}}</h2>
+					<div class="detail-category color-grey-3">{{tour.categorie.name}}</div>
+					<div class="detail-rate rate-wrap clearfix">
+				        <div class="rate">
+							<span class="fa fa-star color-yellow"></span>
+							<span class="fa fa-star color-yellow"></span>
+							<span class="fa fa-star color-yellow"></span>
+							<span class="fa fa-star color-yellow"></span>
+							<span class="fa fa-star color-yellow"></span>
+						</div>
+				      	<i>{{tour.review_set.count}} Reviews</i> 
+			       	</div>
+			    </div>
+			    <div class="col-xs-12 col-sm-4">
+			    </div>
+	       	</div>
+       	</div>
+       	<div class="row padd-90">
+       		<div class="col-xs-12 col-md-8">
+       			<div class="detail-content color-1">
+       				<div class="detail-top slider-wth-thumbs style-2">
+						   {%if tour.image_set.count > 1%}
+							<div class="swiper-container thumbnails-preview" data-autoplay="0" data-loop="1" data-speed="500" data-center="0" data-slides-per-view="1">
+								<div class="swiper-wrapper">
+									<div class="swiper-slide" data-val="0">
+										<img class="img-responsive img-full img-responsive-big" src="{{tour.image_set.all.0}}" alt="">
+									</div>
+									{%for image in tour.other_images %}
+									<div class="swiper-slide" data-val="1">
+										<img class="img-responsive img-full img-responsive-big" src="{{image}}" alt="">
+									</div>
+									{%endfor%}
+								</div>
+								<div class="pagination pagination-hidden"></div>
+							</div>
+							<div class="swiper-container thumbnails" data-autoplay="0" 
+			            	data-loop="0" data-speed="500" data-center="0" 
+			            	data-slides-per-view="responsive" data-xs-slides="3" 
+			            	data-sm-slides="5" data-md-slides="5" data-lg-slides="5" 
+			            	data-add-slides="5">
+								<div class="swiper-wrapper">
+									<div class="swiper-slide current active" data-val="0">
+										<img class="img-responsive img-full img-responsive-small" src="{{tour.image}}" alt="">
+									</div>
+									{%for image in tour.other_images %}
+									<div class="swiper-slide" data-val="1">
+										<img class="img-responsive img-full" src="{{image}}" alt="">
+									</div>
+									{%endfor%}
+								</div>
+								<div class="pagination hidden"></div>
+							</div>
+							{%else%}
+							<img class="img-responsive img-full img-responsive-big-1" src="{{tour.image}}" alt="">
+							{%endif%}
+					</div>
+
+					<div class="detail-content-block">
+						<h3>General Information About tour</h3>
+						{{tour.details | safe}}
+					</div>										
+				</div>
+				<div class="list-content clearfix">
+					<h3>Next Departures</h3>
+					{%if tour.depart_set.all.count > 0%}
+						{%for depart in tour.depart_set.all%}
+						<div class="list-item-entry">
+						<div class="hotel-item style-10 bg-white">
+							<div class="table-view">
+									<div class="radius-top cell-view">
+										<!-- <img src="{%static 'img/tour_list/flight_grid_1.jpg' %}" alt="">-->
+										<h5>from <strong class="color-red-3">${{depart.price}}</strong></h5>
+									</div>
+									<div class="title hotel-middle cell-view">
+									<!-- <h5>from <strong class="color-red-3">${{depart.price}}</strong></h5> -->
+										<div class="fi_block grid-hidden row row10">
+											<div class="flight-icon col-xs-6 col10">
+												<img class="fi_icon" src="{%static 'img/tour_list/flight_icon_2.png' %}" alt="">
+												<div class="fi_content">
+													<div class="fi_title color-dark-2">take off</div>
+													<div class="fi_text color-grey">{{depart.print_from_date}}</div>
+												</div>
+											</div>
+											<div class="flight-icon col-xs-6 col10">
+												<img class="fi_icon" src="{%static 'img/tour_list/flight_icon_1.png' %}" alt="">
+												<div class="fi_content">
+													<div class="fi_title color-dark-2">take off</div>
+													<div class="fi_text color-grey">{{depart.print_to_date}}</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								<div class="title hotel-right clearfix cell-view grid-hidden">
+									<a href="{{tour.url}}" class="c-button b-40 bg-red-3 hv-red-3-o">book now</a>
+									<a href="{{tour.operator.url}}" class="c-button b-40 color-grey-3 hv-o fr"><img src="img/flag_icon_grey.png" alt="">view more</a>
+								
+								</div>						            
+							</div>
+						</div>					
+						</div>
+						{%endfor%}
+						<button id="load_more" class="c-button b-40 bg-red-3 hv-red-3-o" style="width:100%">view more</button>
+					{%else%}
+					<div class="list-item-entry">
+						<div class="hotel-item style-10 bg-white">
+							<div class="table-view">
+									<div class="radius-top cell-view">
+										<img src="{%static 'img/operator/'|add:tour.operator.name|add:'.png'%}" alt="">
+									</div>
+									<div class="title hotel-middle cell-view">
+									<!-- <h5>from <strong class="color-red-3">${{depart.price}}</strong></h5> -->
+										<div class="fi_block grid-hidden row row10">
+											<h3>No depart scheudled for this moment</h3>
+										</div>
+									</div>
+								<div class="title hotel-right clearfix cell-view grid-hidden">
+									<a href="{{tour.url}}" class="c-button b-40 bg-red-3 hv-red-3-o">book now</a>
+									<a href="{{tour.operator.url}}" class="c-button b-40 color-grey-3 hv-o fr"><img src="{% static 'img/flag_icon_grey.png' %}" alt="">view more</a>
+								
+								</div>						            
+							</div>
+						</div>					
+						</div>
+					{%endif%}						   						 						  						  						  						  						  						   						  						  						  						  						 						   						 						   						 						  						   						 						  						
+				</div>       			
+       		</div>
+       		<div class="col-xs-12 col-md-4">
+       			<div class="right-sidebar">
+       				<div class="detail-block bg-dr-blue">
+       					<h4 class="color-white">details</h4>
+       					<div class="details-desc">
+							<p class="color-grey-9"><a href="/categorie/{{tour.categorie.id}}">Category:  <span class="color-white">{{tour.categorie.name}}</span></a></p>
+							<p class="color-grey-9"><a href="/operator/{{tour.operator.id}}">Organiser : <span class="color-white">{{tour.operator.name}}</span></a></p>
+							<p class="color-grey-9">price: <span class="color-white">${{tour.price}}</span></p>
+							<p class="color-grey-9">departure city: <span class="color-white">{{tour.cities.first}}</span></p>
+							<p class="color-grey-9">visited cities: <span class="color-white">{{tour.printable_cities}}</span></p>
+							<p class="color-grey-9">next departure: <span class="color-white">{%if tour.next_depart is not None%}{{tour.next_depart}}{%else%}No depart scheudled for the moment{%endif%}</span></p>
+							<p class="color-grey-9">Duration: <span class="color-white">{{tour.duree}} Days</span></p>
+							 <p class="color-grey-9">rate: <span class="fa fa-star color-yellow"></span><span class="fa fa-star color-yellow"></span><span class="fa fa-star color-yellow"></span><span class="fa fa-star color-yellow"></span><span class="fa fa-star color-yellow"></span></p>
+						</div>
+						<div class="details-btn">
+							<!-- <a href="#" class="c-button b-40 bg-tr-1 hv-white"><span>view on map</span></a> -->
+							<a href="{{tour.url}}" class="c-button b-40 bg-white hv-transparent" target="_blank"><span>book now</span></a>
+						</div>
+       				</div>
+
+					<div class="popular-tours bg-grey-2">
+						<h4 class="color-dark-2">Similar tours</h4>
+						{%for similar in tour.categorie.tour_set.all|slice:":4"%}
+						<div class="hotel-small style-2 clearfix">
+							<a class="hotel-img black-hover" href="/tour/{{similar.id}}">
+								<img class="img-responsive radius-3" src="{{similar.image}}" alt="">
+								<div class="tour-layer delay-1"></div>        						
+							</a>
+							<div class="hotel-desc">
+		    					<h5><span class="color-dark-2">from <strong class="color-red-3">${{similar.price}}</strong></span></h5>
+		    					<h4>{{similar.title}}</h4>
+							</div>
+						</div>
+						{%endfor%}											
+					</div>										      				
+       			</div>       			
+       		</div>
+       	</div>
+       	<!-- <div class="may-interested padd-90">
+	       	<div class="row">
+	       		<div class="col-mob-12 col-xs-6 col-sm-6 col-md-3">
+		          <div class="hotel-item">
+		          	 <div class="radius-top">
+		          	 	 <img src="img/home_3/pop_hotel_1.jpg" alt="">
+		          	 	   <div class="price price-s-1">$273</div>
+		          	 </div>
+		          	 <div class="title clearfix">
+		          	     <h4><b>royal Hotel</b></h4>
+	          	           <div class="rate-wrap">
+		          	          <div class="rate">
+								<span class="fa fa-star color-yellow"></span>
+								<span class="fa fa-star color-yellow"></span>
+								<span class="fa fa-star color-yellow"></span>
+								<span class="fa fa-star color-yellow"></span>
+								<span class="fa fa-star color-yellow"></span>
+							  </div>
+						      <i>485 rewies</i> 
+	                       </div>  
+		             <span class="f-14 color-dark-2">2 Place de la Sans Défense, Puteaux</span>
+		             <p class="f-14">Nunc cursus libero purus ac congue arcu cursus ut sed vitae pulvinar massa idporta nequetiam.</p>
+		             <a href="#" class="c-button bg-dr-blue hv-dr-blue-o b-50 fl">select</a>
+		             <a href="#" class="c-button color-dr-blue hv-o b-50 fr"><img src="img/loc_icon_small_drak.png" alt="">view on map</a>
+		             </div>
+		          </div>      			
+	       		</div>        		       		       		
+	       	</div>
+       	</div> -->
+	</div>
+</div>
+{%endblock%}
+{%block scripts%}
+<script>
+var n=5;
+function load_more(){
+$(".list-item-entry").each(function(index, element){
+if(index >= n){
+$(element).hide()
+}
+else{$(element).show()}
+});
+n +=5;
+if(n>=$(".list-item-entry").length)
+$("#load_more").hide();
+}
+$("#load_more").click(function(){load_more();});
+$(document).ready(function(){
+	load_more();
+	
+});
+$("header").attr("id","black-header");
+</script>
+{%endblock%}
