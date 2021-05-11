@@ -18,5 +18,5 @@ urlpatterns = [
     path("operator/<int:id>", views.get_operator),
     path("operator/<int:id>/<int:page>", views.get_operator),
     path("operator", views.operator_page),
-    
+    path("get_favourites", views.get_favourites)
 ]

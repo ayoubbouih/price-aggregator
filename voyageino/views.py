@@ -12,6 +12,15 @@ from datetime import datetime
 from .models import Tour,City,categorie,Review,Image,Depart,Operator
 from django.db.models import Count
 
+def get_favourites(request):
+    if "fav" in request.COOKIES:
+        fav = request.COOKIES["fav"]
+    else:
+        fav = 0
+    response =  render(request, "cookies.html", {"fav":fav})
+    response.set_cookie("fav",request.COOKIES["fav"]+","+str(int(fav) + 1))
+    return response
+
 def home_page(request):
     cat = categorie.objects.all()
     op = Operator.objects.all()
@@ -108,7 +117,7 @@ def search(request,page=1):
             tmp = Tour.objects.filter(price__gte=min_price, price__lte=max_price,duree__gte=min_duration,duree__lte=max_duration)
             results=[]
             for tour in tmp:
-                if tour.depart_set.filter(from_date__gte=date_min,to_date__lte=date_max).count() != 0:
+                if tour.depart_set.filter(from_date__gte=date_min,to_date__lte=date_max).count() != 0 and cities.intersection(cities,tour.cities.all()).count():
                     results.append(tour)
     total = len(results)
     from_date = datetime.now().date()
