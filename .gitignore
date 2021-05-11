@@ -2,3 +2,4 @@
 /db.sqlite3
 /scraping.log
 /test.html
+/aggregator/__pycache__
