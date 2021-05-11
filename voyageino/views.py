@@ -5,7 +5,7 @@ from django.contrib.sessions.backends.db import SessionStore
 from threading import *
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait  # for implicit and explict waits
+from selenium.webdriver.support.ui import WebDriverWait  
 from selenium.webdriver.chrome.options import Options
 import re
 from datetime import datetime
