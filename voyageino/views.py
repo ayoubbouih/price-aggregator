@@ -15,10 +15,12 @@ from django.db.models import Count
 def get_favourites(request):
     if "fav" in request.COOKIES:
         fav = request.COOKIES["fav"]
+        response =  render(request, "cookies.html", {"fav":fav})
+        response.set_cookie("fav",request.COOKIES["fav"]+","+fav)
     else:
         fav = 0
-    response =  render(request, "cookies.html", {"fav":fav})
-    response.set_cookie("fav",request.COOKIES["fav"]+","+str(int(fav) + 1))
+        response =  render(request, "cookies.html", {"fav":fav})
+        response.set_cookie("fav",str(int(fav) + 1))
     return response
 
 def home_page(request):
