@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tour,City,categorie,Review,Image,Depart,Operator
+from .models import Tour,City,categorie,Review,Image,Depart,Operator,Subscriber
 
 # Register your models here.
 from django.contrib import messages
@@ -62,3 +62,7 @@ class DepartAdmin(admin.ModelAdmin):
 @admin.register(Operator)
 class OperatorAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "url")
+
+@admin.register(Subscriber)
+class SubscriberAdmin(admin.ModelAdmin):
+    list_display = ("id", "email")

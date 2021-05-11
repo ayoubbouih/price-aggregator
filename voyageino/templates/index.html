@@ -95,7 +95,30 @@
 	</div>
 </div>
 
-<!-- TOUR-BLOCK -->
+<div class="main-wraper padd-90">
+	<img class="center-image" src="{% static 'img/home_10/bg_1.jpg' %}" alt="">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-8 col-sm-offset-2">
+				<div class="second-title">
+					<h4 class="subtitle color-white underline">subscribe</h4>
+					<h2 class="color-white">let’s subscribe</h2>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-8 col-sm-offset-2">
+				<form class="subscribe-form" action="subscribe" method="POST">
+					{%csrf_token%}
+					<div class="subscribe-input input-style-1 fl low-pad">
+						<input type="text" name="email" placeholder="Enter your email" required>
+					</div>
+					<button type="submit" class="c-button b-60 bg-red-3 hv-red-3-o fr"><span>subscribe</span></button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
 <!-- TOUR-OPERATORS -->
 <div class="main-wraper bg-grey-2 padd-120">
 	<div class="container">

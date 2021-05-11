@@ -9,18 +9,49 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 import re
 from datetime import datetime
-from .models import Tour,City,categorie,Review,Image,Depart,Operator
+from .models import Tour,City,categorie,Review,Image,Depart,Operator,Subscriber
 from django.db.models import Count
+from aggregator.settings import EMAIL_HOST_USER
+from . import forms
+from django.core.mail import send_mail
+
+def subscribe(request):
+    if request.method == 'POST':
+        if request.POST.get("email"):
+            s = Subscriber(None, request.POST["email"])
+            s.save()
+            return home_page(request)
+def newsletter_send(request):
+    sub = forms.Subscribe()
+    if request.method == 'POST':
+        sub = forms.Subscribe(request.POST)
+        subject = "test"
+        message = "msg test"
+        recepient = str(sub['Email'].value())
+        send_mail(subject,message, EMAIL_HOST_USER, [recepient,"geeksboyskhamsat@gmail.com"], fail_silently = False)
+        return render(request, 'success.html', {'recepient': recepient})
+    return render(request, 'subscribe.html', {'form':sub})
 
 def get_favourites(request):
     if "fav" in request.COOKIES:
         fav = request.COOKIES["fav"]
-        response =  render(request, "cookies.html", {"fav":fav})
-        response.set_cookie("fav",request.COOKIES["fav"]+","+fav)
     else:
-        fav = 0
+        fav = "favourites list is empty"
+    return render(request, "cookies.html", {"fav":fav})
+
+def add_favourites(request, id):
+    if "fav" in request.COOKIES:
+        if str(id) in request.COOKIES["fav"].split(","):
+            fav = "already exist in favourites"
+            response =  render(request, "cookies.html", {"fav":fav})
+        else:
+            fav = request.COOKIES["fav"]+","+str(id)
+            response =  render(request, "cookies.html", {"fav":fav})
+            response.set_cookie("fav",fav)
+    else:
+        fav = id
         response =  render(request, "cookies.html", {"fav":fav})
-        response.set_cookie("fav",str(int(fav) + 1))
+        response.set_cookie("fav",fav)
     return response
 
 def home_page(request):
@@ -50,7 +81,6 @@ def operator_page(request):
     op = Operator.objects.all()
     context = {"operator":op,}
     return render(request,"tour_operator.html",context)
-
 
 def page_not_found_view(request, exception=None):
     return render(request,"404.html")

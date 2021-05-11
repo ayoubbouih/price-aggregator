@@ -130,3 +130,9 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_COOKIE_AGE = 3600*24*90 #IIIIIIIIIIIII: cookies life time
+EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'voyageino.com@gmail.com'
+EMAIL_HOST_PASSWORD = 'd7d9ff00A@@'

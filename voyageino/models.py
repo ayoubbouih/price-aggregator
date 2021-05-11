@@ -127,3 +127,5 @@ class Operator(models.Model):
         counter = self.tour_set.annotate(departs_count=Count("depart"))
         return counter.order_by("-departs_count")[:3]
         
+class Subscriber(models.Model):
+    email = models.EmailField()
