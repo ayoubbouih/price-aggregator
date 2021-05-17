@@ -1,16 +1,12 @@
 import requests
 from django.shortcuts import render 
-from django.http import HttpResponse 
-from django.contrib.sessions.backends.db import SessionStore
 from threading import *
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait  
 from selenium.webdriver.chrome.options import Options
 import re
 from datetime import datetime
 from .models import Tour,City,categorie,Review,Image,Depart,Operator,Subscriber
-from django.db.models import Count
 from aggregator.settings import EMAIL_HOST_USER
 from . import forms
 from django.core.mail import send_mail
@@ -34,28 +30,45 @@ def newsletter_send(request):
         return render(request, 'success.html', {'recepient': recepient})
     return render(request, 'subscribe.html', {'form':sub})
 
-def get_favourites(request):
+def in_favourites(request , id):
     if "fav" in request.COOKIES:
-        fav = request.COOKIES["fav"]
+        if str(id) in request.COOKIES["fav"].split(","):
+            return True
+        return False
+    return False
+    
+
+def remove_favourites(request, id):
+    if "fav" in request.COOKIES:
+        if in_favourites(request,id):
+            fav = request.COOKIES["fav"].split(",")
+            fav.remove(str(id))
+            fav = ",".join(fav)
+            removed = True
+        else:
+            fav = request.COOKIES["fav"]
+            removed=False
     else:
-        fav = "favourites list is empty"
-        messages.add_message(request, messages.INFO, 'A serious error occurred.')
-    messages.info(request, 'Three credits remain in your account.')
-    return render(request, "cookies.html", {"fav":fav})
+        fav = request.COOKIES["fav"]
+        removed = False
+    response = tour_page(request,id,False, False,removed)
+    response.set_cookie("fav",fav)
+    return response
 
 def add_favourites(request, id):
     if "fav" in request.COOKIES:
-        if str(id) in request.COOKIES["fav"].split(","):
-            fav = "already exist in favourites"
-            response =  render(request, "cookies.html", {"fav":fav})
-        else:
+        if in_favourites(request,id) == False:
             fav = request.COOKIES["fav"]+","+str(id)
-            response =  render(request, "cookies.html", {"fav":fav})
-            response.set_cookie("fav",fav)
+            added = True
+        else:
+            fav = request.COOKIES["fav"]
+            added = False
     else:
         fav = id
-        response =  render(request, "cookies.html", {"fav":fav})
-        response.set_cookie("fav",fav)
+        addeed= False
+    response = tour_page(request,id,True, added,False)
+    # response =  render(request, "tour_detail.html", context)
+    response.set_cookie("fav",fav)
     return response
 
 def home_page(request,subscription=False):
@@ -77,8 +90,10 @@ def home_page(request,subscription=False):
     }
     return render(request,"index.html",context)
 
-def tour_page(request, id):
-    context = {"tour":Tour.objects.get(id=id)}
+def tour_page(request, id, favourite=None,added=False, removed=False):
+    if favourite is None:
+        favourite = in_favourites(request,id)
+    context = {"tour":Tour.objects.get(id=id),"favourite":favourite,"added":added, "removed":removed}
     return render(request,"tour_detail.html",context)
 
 def operator_page(request):

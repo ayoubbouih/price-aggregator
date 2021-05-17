@@ -14,8 +14,8 @@ urlpatterns = [
     path("operator/<int:id>", views.get_operator),
     path("operator/<int:id>/<int:page>", views.get_operator),
     path("operator", views.operator_page),
-    path("get_favourites", views.get_favourites),
     path("add_favourites/<int:id>", views.add_favourites),
+    path("remove_favourites/<int:id>", views.remove_favourites),
     path("subscribe", views.subscribe),
     path("newsletter_send", views.newsletter_send),
     

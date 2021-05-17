@@ -1,6 +1,30 @@
 {%extends "template.html"%}
 {%block inner_page %}
 {%load static%}
+{%if added%}
+<div class="bootoast-container bottom center">
+	<div class="bootoast alert alert-success alert-dismissible" style="opacity: 1;">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		  <span aria-hidden="true">×</span>
+	  </button>
+	  <span class="bootoast-alert-container">
+		  <span class="bootoast-alert-content">this tour was added to your favourites</span>
+	  </span>
+  </div>
+</div>
+{%endif%}
+{%if removed%}
+<div class="bootoast-container bottom center">
+	<div class="bootoast alert alert-danger alert-dismissible" style="opacity: 1;">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		  <span aria-hidden="true">×</span>
+	  </button>
+	  <span class="bootoast-alert-container">
+		  <span class="bootoast-alert-content">this tour was removed from your favourites</span>
+	  </span>
+  </div>
+</div>
+{%endif%}
 <div class="detail-wrapper" style="padding-top: 100px;">
 	<div class="container">
 		<div class="detail-header">
@@ -147,7 +171,11 @@
 							 <p class="color-grey-9">rate: <span class="fa fa-star color-yellow"></span><span class="fa fa-star color-yellow"></span><span class="fa fa-star color-yellow"></span><span class="fa fa-star color-yellow"></span><span class="fa fa-star color-yellow"></span></p>
 						</div>
 						<div class="details-btn">
-							<!-- <a href="#" class="c-button b-40 bg-tr-1 hv-white"><span>view on map</span></a> -->
+							{%if favourite%}
+							<a href="/remove_favourites/{{tour.id}}" class="c-button b-40 bg-tr-1 hv-white"><span>remove from favourites</span></a>
+							{%else%}
+							<a href="/add_favourites/{{tour.id}}" class="c-button b-40 bg-tr-1 hv-white"><span>add to favourites</span></a>
+							{%endif%}
 							<a href="{{tour.url}}" class="c-button b-40 bg-white hv-transparent" target="_blank"><span>book now</span></a>
 						</div>
        				</div>
