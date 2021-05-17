@@ -5,11 +5,7 @@ from django.conf import settings
 
 urlpatterns = [
     path("",views.home_page),
-    path('globus', views.globus),
     path('update', views.update, name='update'),
-    path('travlertalks', views.travlertalks, name='travlertalks'),
-    path('intrepidtravel', views.intrepidtravel, name='intrepidtravel'),
-    path('tourradar', views.tourradar, name='tourradar'),
     path("tour/<int:id>", views.tour_page),
     path("categorie/<int:id>/<int:page>", views.get_categorie),
     path("categorie/<int:id>", views.get_categorie),
@@ -23,4 +19,4 @@ urlpatterns = [
     path("subscribe", views.subscribe),
     path("newsletter_send", views.newsletter_send),
     
-]
+]+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

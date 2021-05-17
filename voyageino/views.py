@@ -14,13 +14,15 @@ from django.db.models import Count
 from aggregator.settings import EMAIL_HOST_USER
 from . import forms
 from django.core.mail import send_mail
+from django.contrib import messages
 
 def subscribe(request):
     if request.method == 'POST':
         if request.POST.get("email"):
             s = Subscriber(None, request.POST["email"])
             s.save()
-            return home_page(request)
+            return home_page(request,request.POST["email"])
+
 def newsletter_send(request):
     sub = forms.Subscribe()
     if request.method == 'POST':
@@ -37,6 +39,8 @@ def get_favourites(request):
         fav = request.COOKIES["fav"]
     else:
         fav = "favourites list is empty"
+        messages.add_message(request, messages.INFO, 'A serious error occurred.')
+    messages.info(request, 'Three credits remain in your account.')
     return render(request, "cookies.html", {"fav":fav})
 
 def add_favourites(request, id):
@@ -54,7 +58,7 @@ def add_favourites(request, id):
         response.set_cookie("fav",fav)
     return response
 
-def home_page(request):
+def home_page(request,subscription=False):
     cat = categorie.objects.all()
     op = Operator.objects.all()
     tours = Tour.objects.all().order_by("?")
@@ -68,8 +72,8 @@ def home_page(request):
         "tours":tours[:8],
         "from_date":datetime.strftime(d1, "%m/%d/%Y"),
         "to_date":datetime.strftime(d2, "%m/%d/%Y"),
-        "date_value":datetime.strftime(d1, "%m/%d/%Y")
-
+        "date_value":datetime.strftime(d1, "%m/%d/%Y"),
+        "subscription":subscription
     }
     return render(request,"index.html",context)
 
@@ -101,7 +105,6 @@ def search(request,page=1):
     else:
         destination = ""
         cities = City.objects.all()
-    print(cities, file=f)
     if request.GET.get("min_price"):
         min_price = int(request.GET["min_price"][1:])
         max_price = int(request.GET["max_price"][1:])
@@ -123,6 +126,9 @@ def search(request,page=1):
         min_duration = Tour.objects.all().order_by("duree").first().duree
         max_duration = Tour.objects.all().order_by("duree").last().duree
     if search is not False:
+        price = Tour.objects.filter(price__gte=min_price, price__lte=max_price)
+        duree = Tour.objects.filter(duree__gte=min_duration,duree__lte=max_duration)
+        city = City.objects.filter()
         tmp = []
         checked = []
         if request.GET.get("categories"):
@@ -142,7 +148,6 @@ def search(request,page=1):
                 tmp = Tour.objects.filter(price__gte=min_price, price__lte=max_price,duree__gte=min_duration,duree__lte=max_duration)
                 results=[]
                 for tour in tmp:
-                    print("here",cities, cities.intersection(cities,tour.cities.all()).count() , file=f)
                     if tour.depart_set.filter(from_date__gte=date_min,to_date__lte=date_max).count() != 0 and cities.intersection(cities,tour.cities.all()).count():
                         results.append(tour)
         else:
@@ -151,6 +156,8 @@ def search(request,page=1):
             for tour in tmp:
                 if tour.depart_set.filter(from_date__gte=date_min,to_date__lte=date_max).count() != 0 and cities.intersection(cities,tour.cities.all()).count():
                     results.append(tour)
+    
+    
     total = len(results)
     from_date = datetime.now().date()
     from_date_value = datetime.strftime(date_min, "%m/%d/%Y")
