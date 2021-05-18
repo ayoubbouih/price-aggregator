@@ -339,7 +339,7 @@ def update(request):
     intrepidtravel(request,driver)
     tourradar(request)
     travlertalks(request,driver)
-    print("ends in : ",datetime.datetime.now(), file=f,flush=True)
+    print("ends in : ",datetime.now(), file=f,flush=True)
     driver.quit()
     
 def travlertalks(request,driver=None):
@@ -398,8 +398,8 @@ def travlertalks(request,driver=None):
             departs = departs_box.find_all("div",attrs={"class":"has-color-four-background-color"})
             for depart in departs[:-1]:
                 infos = depart.find_all("div")
-                from_date = datetime.datetime.strptime(infos[0].text.strip(),"%a %d %b %Y").date()
-                to_date = datetime.datetime.strptime(infos[1].text.strip(),"%a %d %b %Y").date()
+                from_date = datetime.strptime(infos[0].text.strip(),"%a %d %b %Y").date()
+                to_date = datetime.strptime(infos[1].text.strip(),"%a %d %b %Y").date()
                 price = infos[5].text.strip().split("€")[-1]
                 if Depart.objects.count() == 0:
                     id = 1
@@ -619,8 +619,8 @@ def tourradar(request):
             #l'ajout des departs
             departs_boxes = soup.find_all("li",attrs={"class":"am-tour-availability__variant"})
             for depart in departs_boxes:
-                from_date = datetime.datetime.strptime(depart.find("div",attrs={"class":"am-tour-availability__variant-bold-text"}).text.strip(),"%d %b, %Y")
-                to_date = datetime.datetime.strptime(depart.find("div",attrs={"class":"am-tour-availability__variant-bold-text--text-align-right"}).text.strip(),"%d %b, %Y")
+                from_date = datetime.strptime(depart.find("div",attrs={"class":"am-tour-availability__variant-bold-text"}).text.strip(),"%d %b, %Y")
+                to_date = datetime.strptime(depart.find("div",attrs={"class":"am-tour-availability__variant-bold-text--text-align-right"}).text.strip(),"%d %b, %Y")
                 price = int("".join(depart.find("div",attrs={"class":"am-tour-availability__variant-price-container"}).div.text.strip()[1:].split(",")))
                 id = Depart.objects.latest('id').id + 1
                 d = Depart(id, t.id, from_date, to_date, price)
