@@ -644,7 +644,6 @@ def tourradar_noce(request):
                 continue
         f.close()
 
-
 def tourradar_national(request):
     url='https://www.tourradar.com/d/morocco'
     response = requests.get(url)
