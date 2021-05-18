@@ -326,7 +326,7 @@ def get_categorie(request, id,page=1):
 
 def update(request):
     f = open("scraping.log","a+")
-    print("starts in : ",datetime.datetime.now(), file=f, flush=True)
+    print("starts in : ",datetime.now(), file=f, flush=True)
     Tour.objects.all().delete()
     Image.objects.all().delete()
     Depart.objects.all().delete()
@@ -459,8 +459,8 @@ def globus(request,driver=None):
             departs = soup.find_all("div",attrs={"class":"listing"})
             for depart in departs:
                 dates = depart.find_all("p",attrs={"class":"date-numbers"})
-                from_date = datetime.datetime.strptime(dates[0].text.strip(),"%d %b %y")
-                to_date = datetime.datetime.strptime(dates[1].text.strip(),"%d %b %y")
+                from_date = datetime.strptime(dates[0].text.strip(),"%d %b %y")
+                to_date = datetime.strptime(dates[1].text.strip(),"%d %b %y")
                 price = int("".join(depart.find("p",attrs={"class":"price-actual"}).text.split("$")[1].split(",")))
                 if Depart.objects.count() == 0:
                     id = 1
