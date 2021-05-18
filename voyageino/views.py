@@ -26,7 +26,7 @@ def newsletter_send(request):
         subject = "test"
         message = "msg test"
         recepient = str(sub['Email'].value())
-        send_mail(subject,message, EMAIL_HOST_USER, [recepient,"geeksboyskhamsat@gmail.com"], fail_silently = False)
+        send_mail(subject,message, EMAIL_HOST_USER, [recepient], fail_silently = False)
         return render(request, 'success.html', {'recepient': recepient})
     return render(request, 'subscribe.html', {'form':sub})
 
@@ -260,8 +260,8 @@ def get_operator(request, id, page=1):
         "operator": Operator.objects.get(id = id),
         "cities":City.objects.all(),
         "categories":categorie.objects.all(),
-        "min":min_price,
-        "max":max_price,
+        "min_price":min_price,
+        "max_price":max_price,
         "min_duration":min_duration,
         "max_duration":max_duration,
         "title":Operator.objects.get(id=id).name,
@@ -311,8 +311,10 @@ def get_categorie(request, id,page=1):
         'categories':categorie.objects.all(),
         "pages":range(1 , nb+1),
         "selected":selected,"suivant":suivant,"precedent":precedent,
-        "min_price":min_price,"max_price":max_price,
-        "min_duration":min_duration,"max_duration":max_duration,
+        "min_price":min_price,
+        "max_price":max_price,
+        "min_duration":min_duration,
+        "max_duration":max_duration,
         "title":categorie.objects.get(id=id).name,"total":total,
         "from_date":d1.strftime("%m/%d/%Y"),
         "to_date":d2.strftime("%m/%d/%Y"),
@@ -565,7 +567,80 @@ def intrepidtravel(request,driver=None):
         print(url, "cities:", len(cities), "images:",len(images), "departs:",len(dates), file=f ,flush=True)
     f.close()
 
-def tourradar(request):
+def tourradar_noce(request):
+    url="https://www.tourradar.com/sc/couples"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content,"html.parser")
+    box = soup.find("section",attrs={"class":"ao-clp-serp-with-images ao-clp-serp-with-images--padding-top ah-grid-container"})
+    countries = box.find_all("li",attrs={"class":"ao-clp-serp-with-images__item js-ao-clp-serp-with-images__item ah-grid-col ah-grid-col--s1-4 ah-grid-col--m1-4 ah-grid-col--l1-3"})
+    for country in countries:
+        url = "https://www.tourradar.com"+country.get("data-path")
+        response = requests.get(url)
+        first_page = BeautifulSoup(response.content,"html.parser")
+        deals = first_page.find_all("li",attrs={"class":"tour exp"})
+        f = open("scraping.log","a+")
+        for deal in deals:    
+            try:
+                operator = 4
+                url = "https://www.tourradar.com"+deal.a.get("href")
+                title = deal.h4.text
+                price = int("".join(deal.find("span",attrs={"class":"js-br__price-wrapper-price-description-value br__price-wrapper-price-description-value"}).text.split(",")))
+                categorie = 3 #voyage de noce
+                duree = deal.find("dd",{"class","br__price-wrapper-info-description"}).text.split()[0]
+                response = requests.get(url)
+                soup = BeautifulSoup(response.content,"html.parser") 
+                details = str(soup.find("div",attrs={"class":"ao-tour-block","data-block-type":"Itinerary"}))
+                #création du voyage
+
+                if Tour.objects.count() == 0:
+                    id = 1
+                else:
+                    id = Tour.objects.latest('id').id + 1
+                t = Tour(id,url,title,price,str(details),duree,categorie, operator)
+                t.save()
+
+                #l'ajout des villes 
+                if City.objects.count() == 0:
+                    id = 1
+                else:
+                    id = City.objects.latest('id').id + 1
+                cities = soup.find("div",{"class":"ao-tour-places-you-will-see__carousel"}).find_all("li") 
+                for city in cities:
+                    city = city.text.strip()
+                    if City.objects.filter(name=city).count() > 0:
+                        t.cities.add(City.objects.filter(name=city).first())
+                    else:
+                        id = City.objects.count() + 1
+                        c = City(id,city.strip())
+                        c.save()
+                        t.cities.add(c)
+                #l'ajout des images
+                first_image = soup.find("div",{"class":"ao-tour-hero-image"}).img.get("src")
+                id = Image.objects.latest('id').id + 1
+                i = Image(id,t.id,first_image)
+                i.save()
+                images_box = soup.find_all("img",attrs={"class":"ao-tour-places-you-will-see__image js-ao-tour-places-you-will-see__image"})
+                for image in images_box:
+                    id = Image.objects.latest('id').id + 1
+                    i = Image(id,t.id,image.get("data-src"))
+                    i.save()
+
+                #l'ajout des departs
+                departs_boxes = soup.find_all("li",attrs={"class":"am-tour-availability__variant"})
+                for depart in departs_boxes:
+                    from_date = datetime.strptime(depart.find("div",attrs={"class":"am-tour-availability__variant-bold-text"}).text.strip(),"%d %b, %Y")
+                    to_date = datetime.strptime(depart.find("div",attrs={"class":"am-tour-availability__variant-bold-text--text-align-right"}).text.strip(),"%d %b, %Y")
+                    price = int("".join(depart.find("div",attrs={"class":"am-tour-availability__variant-price-container"}).div.text.strip()[1:].split(",")))
+                    id = Depart.objects.latest('id').id + 1
+                    d = Depart(id, t.id, from_date, to_date, price)
+                    d.save()
+            except Exception as e:
+                print(e, file=f)
+                continue
+        f.close()
+
+
+def tourradar_national(request):
     url='https://www.tourradar.com/d/morocco'
     response = requests.get(url)
     first_page = BeautifulSoup(response.content,"html.parser")
@@ -573,10 +648,11 @@ def tourradar(request):
     f = open("scraping.log","a+")
     for deal in deals:    
         try:
+            operator = 4
             url = "https://www.tourradar.com"+deal.a.get("href")
             title = deal.h4.text
             price = int("".join(deal.find("span",attrs={"class":"js-br__price-wrapper-price-description-value br__price-wrapper-price-description-value"}).text.split(",")))
-            categorie = 3 #voyage de noce
+            categorie = 1 #voyage national
             duree = deal.find("dd",{"class","br__price-wrapper-info-description"}).text.split()[0]
             response = requests.get(url)
             soup = BeautifulSoup(response.content,"html.parser") 
@@ -587,7 +663,7 @@ def tourradar(request):
                 id = 1
             else:
                 id = Tour.objects.latest('id').id + 1
-            t = Tour(id,url,title,price,str(details),duree,categorie)
+            t = Tour(id,url,title,price,str(details),duree,categorie, operator)
             t.save()
 
             #l'ajout des villes 
