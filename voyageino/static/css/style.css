@@ -60,7 +60,7 @@ a { text-decoration: none; color: inherit; }
 
 iframe { border: none; outline: none; }
 
-ul { list-style: none; }
+ul {list-style: none;}
 
 button { background: none; border: 0px none; }
 
@@ -663,7 +663,7 @@ header { position: fixed; left: 0px; top: 0px; z-index: 100; width: 100%; -webki
 header.scrol .top-header-bar { padding: 15px 0px 0px; }
 
 header.hovered.scrol { background: rgba(0, 0, 0, 0.8); }
-header.hovered.scrol .nav {padding: 15px 0px;}
+header.hovered.scrol .nav {padding: 0px 0px;top: 50%;}
 header.hovered.scrol .logo {top: 8px;}
 header.bg-black-o.scrol { background: rgba(0, 0, 0, 0.8); }
 .sc-1.scrol {height: 60px;}
@@ -834,7 +834,7 @@ body.st-148 { padding-top: 148px; }
 
 #logo {float: left}
 
-nav { float: right; color: #fff; padding-top: 4px; -o-transition: all 0.2s ease-out; transition: all 0.2s ease-out; -webkit-transition: all 0.2s ease-out; -moz-transition: all 0.2s ease-out; -ms-transition: all 0.2s ease-out; }
+nav {float: right;color: #fff;padding-top: 4px;-o-transition: all 0.2s ease-out;transition: all 0.2s ease-out;-webkit-transition: all 0.2s ease-out;-moz-transition: all 0.2s ease-out;-ms-transition: all 0.2s ease-out;}
 
 nav a, nav a:focus { color: #fff; }
 
@@ -7480,3 +7480,6 @@ a.ui-state-default {
   background: rgba(0, 0, 0, 0.8);
 }
 
+#nav-menu {
+  margin-top: 24px
+}
