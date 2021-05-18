@@ -171,7 +171,7 @@
 												style="padding-right: 0px;padding-left: 0px;">
 												<img
 													alt="Alternate text" border="0" class="left fixedwidth"
-													src="images/logo-min.png"
+													src="https://i.ibb.co/4gH0HQr/logo.png"
 													style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 189px; display: block;"
 													title="Alternate text" width="189" />
 												
@@ -271,8 +271,8 @@
 														style="padding-left:20px;padding-right:20px;font-size:12px;display:inline-block;letter-spacing:undefined;"><span
 															style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;"><span
 																data-mce-style="font-size: 12px; line-height: 24px;"
-																style="font-size: 12px; line-height: 24px;">15/07/2020 ⟶
-																20/07/2020</span> </span></span></div>
+																style="font-size: 12px; line-height: 24px;">{{principal.depart_set.first.print_from_date}} ⟶
+																{{principal.depart_set.first.print_to_date}}</span> </span></span></div>
 												
 											</div>
 											
@@ -306,7 +306,7 @@
 													style="line-height: 1.2; font-size: 12px; font-family: 'Nunito', Arial, 'Helvetica Neue', Helvetica, sans-serif; color: #555555; mso-line-height-alt: 14px;">
 													<p
 														style="margin: 0; font-size: 16px; line-height: 1.2; word-break: break-word; mso-line-height-alt: 19px; margin-top: 0; margin-bottom: 0;">
-														<span style="font-size: 16px;">⟶ {{first.title}}</span></p>
+														<span style="font-size: 16px;">⟶ {{principal.title}}</span></p>
 												</div>
 											</div>
 											
@@ -314,7 +314,7 @@
 												style="padding-right: 0px;padding-left: 0px;">
 												<img
 													align="center" alt="Alternate text" border="0"
-													class="center autowidth" src="{{first.image}}"
+													class="center autowidth" src="{{principal.image}}"
 													style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 650px; display: block;"
 													title="Alternate text" width="650" />
 												
@@ -447,7 +447,7 @@
 													style="line-height: 1.2; font-size: 12px; font-family: 'Nunito', Arial, 'Helvetica Neue', Helvetica, sans-serif; color: #555555; mso-line-height-alt: 14px;">
 													<p
 														style="margin: 0; font-size: 14px; line-height: 1.2; word-break: break-word; text-align: center; mso-line-height-alt: 17px; margin-top: 0; margin-bottom: 0;">
-														{{first.departs_set.all.first.print_from_date}}</p>
+														{{principal.depart_set.first.print_from_date}}</p>
 												</div>
 											</div>
 											
@@ -520,7 +520,7 @@
 													style="line-height: 1.2; font-size: 12px; font-family: 'Nunito', Arial, 'Helvetica Neue', Helvetica, sans-serif; color: #555555; mso-line-height-alt: 14px;">
 													<p
 														style="margin: 0; font-size: 14px; line-height: 1.2; word-break: break-word; text-align: center; mso-line-height-alt: 17px; margin-top: 0; margin-bottom: 0;">
-														{{fist.departs_set.all.first.print_to_date}}/p>
+														{{principal.depart_set.first.print_to_date}}</p>
 												</div>
 											</div>
 											
@@ -593,8 +593,8 @@
 													style="text-decoration:none;display:inline-block;color:#ffffff;background-color:transparent;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;width:auto; width:auto;;border-top:1px dashed #2A9A5F;border-right:1px dashed #2A9A5F;border-bottom:1px dashed #2A9A5F;border-left:1px dashed #2A9A5F;padding-top:5px;padding-bottom:5px;font-family:Arial, Helvetica Neue, Helvetica, sans-serif;text-align:center;mso-border-alt:none;word-break:keep-all;">
 													<span
 														style="padding-left:20px;padding-right:20px;font-size:16px;display:inline-block;letter-spacing:undefined;"><span
-															style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">{{first.duree}}
-															DAYS = {{first.price}}$ </span></span></div>
+															style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">{{principal.duree}}
+															DAYS = {{principal.price}}$ </span></span></div>
 												
 											</div>
 											
@@ -645,7 +645,7 @@
 													style="text-decoration:none;display:inline-block;color:#ff6600;background-color:#ffffff;border-radius:8px;-webkit-border-radius:8px;-moz-border-radius:8px;width:auto; width:auto;;border-top:0px solid #9C8A5D;border-right:0px solid #9C8A5D;border-bottom:0px solid #9C8A5D;border-left:0px solid #9C8A5D;padding-top:5px;padding-bottom:5px;font-family:Arial, Helvetica Neue, Helvetica, sans-serif;text-align:center;mso-border-alt:none;word-break:keep-all;">
 													<span
 														style="padding-left:20px;padding-right:20px;font-size:16px;display:inline-block;letter-spacing:undefined;"><a
-															href="http://127.0.0.1:8000/tour/{{first.id}}"><span
+															href="http://127.0.0.1:8000/tour/{{principal.id}}"><span
 																style="font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;">View
 																booking</span></a></span></div>
 												

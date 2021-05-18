@@ -23,10 +23,8 @@ def subscribe(request):
 def newsletter_send(request):
     plaintext = get_template('email.html')
     htmly = get_template('email.html')
-    to_date = Depart.objects.all().order_by("-to_date").first().to_date
-    from_date = Depart.objects.all().order_by("-to_date").last().to_date
     tours = Tour.objects.all().order_by("?")
-    d = {"from_date":from_date,"to_date":to_date, "first":tours[0],"tours":tours[1:4]}
+    d = {"principal":tours[0],"tours":tours[1:4]}
 
     subject, from_email, to = 'hello', EMAIL_HOST_USER, 'ay.bouihrouchane@gmail.com'
     text_content = plaintext.render(d)
