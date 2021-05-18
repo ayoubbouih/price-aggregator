@@ -11,6 +11,7 @@ urlpatterns = [
     path("categorie/<int:id>", views.get_categorie),
     path("search/<int:page>", views.search),
     path("search", views.search),
+    path("tourradar_noce", views.tourradar_noce),
     path("operator/<int:id>", views.get_operator),
     path("operator/<int:id>/<int:page>", views.get_operator),
     path("operator", views.operator_page),
