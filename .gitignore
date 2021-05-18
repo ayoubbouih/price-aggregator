@@ -2,3 +2,5 @@
 /scraping.log
 /test.html
 /aggregator/__pycache__
+/voyageino/__pycache__
+/voyageino/migrations/
