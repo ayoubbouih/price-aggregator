@@ -8,9 +8,10 @@ import re
 from datetime import datetime
 from .models import Tour,City,categorie,Review,Image,Depart,Operator,Subscriber
 from aggregator.settings import EMAIL_HOST_USER
-from . import forms
 from django.core.mail import send_mail
-from django.contrib import messages
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import get_template
+from django.template import Context
 
 def subscribe(request):
     if request.method == 'POST':
@@ -20,23 +21,27 @@ def subscribe(request):
             return home_page(request,request.POST["email"])
 
 def newsletter_send(request):
-    sub = forms.Subscribe()
-    if request.method == 'POST':
-        sub = forms.Subscribe(request.POST)
-        subject = "test"
-        message = "msg test"
-        recepient = str(sub['Email'].value())
-        send_mail(subject,message, EMAIL_HOST_USER, [recepient], fail_silently = False)
-        return render(request, 'success.html', {'recepient': recepient})
-    return render(request, 'subscribe.html', {'form':sub})
+    plaintext = get_template('email.html')
+    htmly = get_template('email.html')
+    to_date = Depart.objects.all().order_by("-to_date").first().to_date
+    from_date = Depart.objects.all().order_by("-to_date").last().to_date
+    tours = Tour.objects.all().order_by("?")
+    d = {"from_date":from_date,"to_date":to_date, "first":tours[0],"tours":tours[1:4]}
+
+    subject, from_email, to = 'hello', EMAIL_HOST_USER, 'ay.bouihrouchane@gmail.com'
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
 
 def in_favourites(request , id):
     if "fav" in request.COOKIES:
         if str(id) in request.COOKIES["fav"].split(","):
             return True
         return False
-    return False
-    
+    return False   
+
 
 def remove_favourites(request, id):
     if "fav" in request.COOKIES:
@@ -704,3 +709,4 @@ def tourradar_national(request):
             print(e, file=f)
             continue
     f.close()
+
