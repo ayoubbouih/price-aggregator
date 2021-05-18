@@ -54,12 +54,17 @@ $(function() {
 	//center all images inside containers
 	$('.center-image').each(function(){
 		var bgSrc = $(this).attr('src');
-		$(this).parent().addClass('background-block').css({'background-image':'linear-gradient(rgba(255,102,0,1), rgba(255,102,0,0.2)), url('+bgSrc+')'});
+		$(this).parent().addClass('background-block').css({'background-image':'url('+bgSrc+')'});
 		$(this).hide();
 	});
 	$('.center-image-op').each(function(){
 		var bgSrc = $(this).attr('src');
 		$(this).parent().addClass('background-block-op').css({'background-image':'linear-gradient(rgba(255,102,0,1), rgba(255,102,0,0.2)), url('+bgSrc+')'});
+		$(this).hide();
+	});
+	$('.center-image-index').each(function(){
+		var bgSrc = $(this).attr('src');
+		$(this).parent().addClass('background-block-op').css({'background-image':'linear-gradient(rgba(255,102,0,0.2),rgba(255,102,0,1))'});
 		$(this).hide();
 	});
 	//sticked header
