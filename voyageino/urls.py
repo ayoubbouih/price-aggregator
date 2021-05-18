@@ -12,6 +12,7 @@ urlpatterns = [
     path("search/<int:page>", views.search),
     path("search", views.search),
     path("tourradar_noce", views.tourradar_noce),
+    path("traveltalk", views.travlertalks),
     path("operator/<int:id>", views.get_operator),
     path("operator/<int:id>/<int:page>", views.get_operator),
     path("operator", views.operator_page),

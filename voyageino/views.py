@@ -360,11 +360,15 @@ def travlertalks(request,driver=None):
     tours.delete()
 
     url='https://www.traveltalktours.com/search-tour/?_destination=morocco-tours'
+    if driver == None:
+        PATH = "C:\Program Files\chromedriver.exe"
+        options = Options()
+        options.headless = True
+        driver = webdriver.Chrome(PATH, options=options)
     driver.get(url)
     html = driver.execute_script("return document.documentElement.outerHTML")
     first_page = BeautifulSoup(html,"html.parser")
     deals = first_page.find_all("div",attrs={"class":"dest-tour-card"})
-    f = open("scraping.log","a+")
     for deal in deals:
         try:
             operator = 3
@@ -426,11 +430,25 @@ def travlertalks(request,driver=None):
         except Exception as e:
             print(e, file=f)
             continue
+    print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
 
 def globus(request,driver=None):
     f = open("scraping.log","a+")
+    print("Globus", file=f, flush=True)
+    print("starts in : ",datetime.now(), file=f, flush=True)
+    tours = Tour.objects.filter(operator=1)
+    for tour in tours:
+        tour.image_set.all().delete()
+        tour.depart_set.all().delete()
+    tours.delete()
+
     url="https://www.globusjourneys.com/Vacation-Packages/Tour-Africa/Vacations/"
+    if driver == None:
+        PATH = "C:\Program Files\chromedriver.exe"
+        options = Options()
+        options.headless = True
+        driver = webdriver.Chrome(PATH, options=options)
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
     current_year = soup.find("div",attrs={"id":"current-year"})
@@ -499,10 +517,21 @@ def globus(request,driver=None):
         except Exception as e:
             print(e, file=f, flush=True)
             continue
-        f.close()
+        
+    print("ends in : ",datetime.now(), file=f,flush=True)
+    f.close()
     return render(request,"index.html")
 
 def intrepidtravel(request,driver=None): 
+    f = open("scraping.log","a+")
+    print("Intrepid Travel", file=f, flush=True)
+    print("starts in : ",datetime.now(), file=f, flush=True)
+    tours = Tour.objects.filter(operator=2)
+    for tour in tours:
+        tour.image_set.all().delete()
+        tour.depart_set.all().delete()
+    tours.delete()
+
     url = "https://www.intrepidtravel.com/en/morocco"
     if driver == None:
         PATH = "C:\Program Files\chromedriver.exe"
@@ -578,10 +607,20 @@ def intrepidtravel(request,driver=None):
         except Exception as e:
             print(e, file=f)
             
-        print(url, "cities:", len(cities), "images:",len(images), "departs:",len(dates), file=f ,flush=True)
+    print(url, "cities:", len(cities), "images:",len(images), "departs:",len(dates), file=f ,flush=True)
+    print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
 
 def tourradar_noce(request):
+    f = open("scraping.log","a+")
+    print("Tour Radar Honeymoon", file=f, flush=True)
+    print("starts in : ",datetime.now(), file=f, flush=True)
+    tours = Tour.objects.filter(operator=4,category=3)
+    for tour in tours:
+        tour.image_set.all().delete()
+        tour.depart_set.all().delete()
+    tours.delete()
+
     url="https://www.tourradar.com/sc/couples"
     response = requests.get(url)
     soup = BeautifulSoup(response.content,"html.parser")
@@ -651,9 +690,20 @@ def tourradar_noce(request):
             except Exception as e:
                 print(e, file=f)
                 continue
-        f.close()
+    print(url, "cities:", len(cities), "images:",len(images), "departs:",len(dates), file=f ,flush=True)
+    print("ends in : ",datetime.now(), file=f,flush=True)
+    f.close()
 
 def tourradar_national(request):
+    f = open("scraping.log","a+")
+    print("Tour Radar National", file=f, flush=True)
+    print("starts in : ",datetime.now(), file=f, flush=True)
+    tours = Tour.objects.filter(operator=4,category=1)
+    for tour in tours:
+        tour.image_set.all().delete()
+        tour.depart_set.all().delete()
+    tours.delete()
+    
     url='https://www.tourradar.com/d/morocco'
     response = requests.get(url)
     first_page = BeautifulSoup(response.content,"html.parser")
@@ -717,5 +767,7 @@ def tourradar_national(request):
         except Exception as e:
             print(e, file=f)
             continue
+    print(url, "cities:", len(cities), "images:",len(images), "departs:",len(dates), file=f ,flush=True)
+    print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
 
