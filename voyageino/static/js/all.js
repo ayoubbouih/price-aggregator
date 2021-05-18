@@ -62,6 +62,11 @@ $(function() {
 		$(this).parent().addClass('background-block-op').css({'background-image':'linear-gradient(rgba(255,102,0,1), rgba(255,102,0,0.2)), url('+bgSrc+')'});
 		$(this).hide();
 	});
+	$('.center-image-index').each(function(){
+		var bgSrc = $(this).attr('src');
+		$(this).parent().addClass('background-block-op').css({'background-image':'linear-gradient(rgba(255,102,0,0.2),rgba(255,102,0,1))'});
+		$(this).hide();
+	});
 	//sticked header
 	var $st_header = $('header');
 	if($st_header.hasClass('header-sticked')){
