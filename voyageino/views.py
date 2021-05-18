@@ -348,6 +348,15 @@ def update(request):
     driver.quit()
     
 def travlertalks(request,driver=None):
+    f = open("scraping.log","a+")
+    print("Travel Talks", file=f, flush=True)
+    print("starts in : ",datetime.now(), file=f, flush=True)
+    tours = Tour.objects.filter(operator=3)
+    for tour in tours:
+        tour.image_set.all().delete()
+        tour.depart_set.all().delete()
+    tours.delete()
+
     url='https://www.traveltalktours.com/search-tour/?_destination=morocco-tours'
     driver.get(url)
     html = driver.execute_script("return document.documentElement.outerHTML")
