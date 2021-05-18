@@ -35,6 +35,7 @@ class Tour(models.Model):
             return None
     def other_images(self):
         return self.image_set.all()[1:]
+
 class City(models.Model):
     name = models.TextField()
 
@@ -49,7 +50,6 @@ class City(models.Model):
 
     def image(self):
         return self.tour_set.all()[self.id  % self.tour_set.count()].image
-
 
 class categorie(models.Model):
     name = models.TextField()
@@ -67,7 +67,6 @@ class categorie(models.Model):
         l = str(self.photo).split("/")
         r = [l[-3],l[-2],l[-1]]
         return "/".join(r)
-
 
 class Review(models.Model):
     note = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(5)])
