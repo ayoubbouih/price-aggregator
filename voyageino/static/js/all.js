@@ -1053,9 +1053,14 @@ $("document").ready(function(){
 		categories = Array();
 		$("input[name=checkbox]").each(function(){if(this.checked) categories.push($(this).val().toString())});
 		 $("#categories").val(categories.join(",").toString());
-		console.log($("#categories").val());
+		console.log("categories:",$("#categories").val());
 	});
-	
+	$("input[name=checkbox-operator]").on("click",function(){
+		operators = Array();
+		$("input[name=checkbox-operator]").each(function(){if(this.checked) operators.push($(this).val().toString())});
+		 $("#operators").val(operators.join(",").toString());
+		console.log("operators:",$("#operators").val());
+	});
 });
 
 

@@ -143,37 +143,31 @@ def search(request,page=1):
         min_duration = Tour.objects.all().order_by("duree").first().duree
         max_duration = Tour.objects.all().order_by("duree").last().duree
     if search is not False:
-        price = Tour.objects.filter(price__gte=min_price, price__lte=max_price)
-        duree = Tour.objects.filter(duree__gte=min_duration,duree__lte=max_duration)
-        city = City.objects.filter()
-        tmp = []
-        checked = []
+        price_filter = Tour.objects.filter(price__gte=min_price, price__lte=max_price)
+        duree_filter = Tour.objects.filter(duree__gte=min_duration,duree__lte=max_duration)
+        results = price_filter & duree_filter
+        if cities.count() == 1:
+            cities_filter = cities[0].tour_set.all()
+            results = results & cities_filter
+
+        checked_categories = []
+        checked_operator = []
+        operators_ids = []
+        categories_ids = []
         if request.GET.get("categories"):
             if request.GET["categories"] != ['[]']:
                 categories = request.GET["categories"].split(",")
                 for category in categories:
-                    checked.append(category)
-                    id = int(category)
-                    tours = categorie.objects.get(id=id).tour_set.all()
-                    tmp.extend(tours.filter(price__gte=min_price, price__lte=max_price,duree__gte=min_duration,duree__lte=max_duration))
-                    results=[]
-                    for tour in tmp:
-                        if tour.depart_set.filter(from_date__gte=date_min,to_date__lte=date_max).count() != 0 and cities.intersection(cities,tour.cities.all()).count():
-                            results.append(tour)
-                checked=",".join(checked)
-            else:
-                tmp = Tour.objects.filter(price__gte=min_price, price__lte=max_price,duree__gte=min_duration,duree__lte=max_duration)
-                results=[]
-                for tour in tmp:
-                    if tour.depart_set.filter(from_date__gte=date_min,to_date__lte=date_max).count() != 0 and cities.intersection(cities,tour.cities.all()).count():
-                        results.append(tour)
-        else:
-            tmp = Tour.objects.filter(price__gte=min_price, price__lte=max_price,duree__gte=min_duration,duree__lte=max_duration)
-            results=[]
-            for tour in tmp:
-                if tour.depart_set.filter(from_date__gte=date_min,to_date__lte=date_max).count() != 0 and cities.intersection(cities,tour.cities.all()).count():
-                    results.append(tour)
-    
+                    checked_categories.append(int(category))
+                    #categories_ids.append(int(category))
+                results = results & Tour.objects.filter(categorie__in=checked_categories)
+        if request.GET.get("operators"):
+            if request.GET["operators"] != ['[]']:
+                operators = request.GET["operators"].split(",")
+                for operator in operators:
+                    checked_operator.append(int(operator))
+                    #operators_ids.append(int(operator))
+                results = results & Tour.objects.filter(operator__in=checked_operator)
     
     total = len(results)
     from_date = datetime.now().date()
@@ -188,10 +182,15 @@ def search(request,page=1):
     max_duration_value = max_duration
     min_duration = Tour.objects.all().order_by("duree").first().duree
     max_duration = Tour.objects.all().order_by("duree").last().duree
+    
     context={
         'Tours':results,
         "cities":City.objects.all(),
-        "checked":checked,
+        "operators": Operator.objects.all(),
+        "checked_categories":checked_categories,
+        "checked_operator":checked_operator,
+        "checked_categories_value": ",".join(categories),
+        "checked_operator_value": ",".join(operators),
         'categories':categorie.objects.all(),
         "min_price":min_price,"max_price":max_price,
         "min_price_value":min_price_value,"max_price_value":max_price_value,
@@ -253,9 +252,12 @@ def get_operator(request, id, page=1):
     max_duration_value = Operator.objects.get(id=id).tour_set.all().order_by("duree").last().duree
     d1 = datetime.now().date()
     d2 = Depart.objects.all().order_by("-to_date").first().to_date
-
+    checked_operator = [id]
     context = {
         "Tours":Operator.objects.get(id=id).tour_set.all()[9 * (page - 1):9 * page],
+        "operators": Operator.objects.all(),
+        "checked_operator":checked_operator,
+        "checked_operator_value":",".join(checked_operator),
         "pages":range(1 , nb+1),
         "selected":selected,
         "suivant":suivant,
@@ -270,7 +272,10 @@ def get_operator(request, id, page=1):
         "title":Operator.objects.get(id=id).name,
         "total":total,
         "from_date":d1.strftime("%m/%d/%Y"),
+        "from_date_value":d1.strftime("%m/%d/%Y"),
         "to_date":d2.strftime("%m/%d/%Y"),
+        "to_date_value":d2.strftime("%m/%d/%Y"),
+        "from_date_value":Operator.objects.get(id = id),
         "min_price_value":min_price_value,
         "max_price_value":max_price_value,
         "min_duration_value":min_duration_value,
@@ -309,6 +314,7 @@ def get_categorie(request, id,page=1):
     d2 = Depart.objects.all().order_by("-to_date").first().to_date
     context={
         'Tours':categorie.objects.get(id=id).tour_set.all()[9 * (page - 1):9 * page],
+        "operators": Operator.objects.all(),
         "cities":City.objects.all(),
         'categorie':categorie.objects.get(id=id),
         'categories':categorie.objects.all(),
@@ -320,8 +326,11 @@ def get_categorie(request, id,page=1):
         "max_duration":max_duration,
         "title":categorie.objects.get(id=id).name,"total":total,
         "from_date":d1.strftime("%m/%d/%Y"),
+        "from_date_value":d1.strftime("%m/%d/%Y"),
         "to_date":d2.strftime("%m/%d/%Y"),
-        "checked":[id],
+        "to_date_value":d2.strftime("%m/%d/%Y"),
+        "checked_categories":[id],
+        "checked_categories_value":",".join([id]),
         "min_price_value":min_price_value,
         "max_price_value":max_price_value,
         "min_duration_value":min_duration_value,

@@ -9,7 +9,7 @@
               <div class="form-block clearfix">
                   <div class="input-style-1 b-50 color-3">
                       <img src="{%static 'img/loc_icon_small_grey.png' %}" alt="">
-                      <input list="cities" placeholder="Where do you want to go?" name="destination" value="" autocomplete="off">
+                      <input list="cities" placeholder="Where do you want to go?" name="destination" value="{{destination}}" autocomplete="off">
                       <datalist id="cities">
                           {%for city in cities%}
                           <option value="{{city}}"></option>
@@ -21,13 +21,13 @@
               <div class="form-block clearfix">
                   <div class="input-style-1 b-50 color-3">
                       <img src="{%static 'img/calendar_icon_grey.png' %}" alt="">
-                      <input type="text" placeholder="Check In" value="{{from_date}}" min ="{{from_date}}" class="datepicker from_date" name="from_date">
+                      <input type="text" placeholder="Check In" value="{{from_date_value}}" min ="{{from_date}}" class="datepicker from_date" name="from_date">
                   </div>					
               </div>
               <div class="form-block clearfix">
                   <div class="input-style-1 b-50 color-3">
                       <img src="{%static 'img/calendar_icon_grey.png' %}" alt="">
-                      <input type="text" placeholder="Check Out" value="{{to_date}}" min="{{from_date}}" class="datepicker to_date" name="to_date" >
+                      <input type="text" placeholder="Check Out" value="{{to_date_value}}" min="{{from_date}}" class="datepicker to_date" name="to_date" >
                   </div>					
               </div>
           </div>
@@ -38,7 +38,7 @@
        <div class="sidebar-rating">
           {%for cat in categories%}
           <div class="input-entry color-5">
-              {%if cat.id in checked %}
+              {%if cat.id in checked_categories %}
               <input class="checkbox-form" id="ref-{{cat.id}}" type="checkbox" name="checkbox" value="{{cat.id}}" checked>
               {%else%}
               <input class="checkbox-form" id="ref-{{cat.id}}" type="checkbox" name="checkbox" value="{{cat.id}}">
@@ -49,9 +49,30 @@
               </label>
           </div>
           {%endfor%}
-          <input type="hidden" name="categories" value="{{categorie.id}}" id="categories">																
+          <input type="hidden" name="categories" value="{{checked_categories_value}}" id="categories">																
        </div>											
    </div>	
+
+   <div class="sidebar-block">
+    <h4 class="sidebar-title color-dark-2">Operators</h4>
+    <div class="sidebar-rating">
+       {%for operator in operators%}
+       <div class="input-entry color-5">
+           {%if operator.id in checked_operator %}
+           <input class="checkbox-form" id="ref-operator-{{operator.id}}" type="checkbox" name="checkbox-operator" value="{{operator.id}}" checked>
+           {%else%}
+           <input class="checkbox-form" id="ref-operator-{{operator.id}}" type="checkbox" name="checkbox-operator" value="{{operator.id}}">
+           {%endif%}
+           <label class="clearfix" for="ref-operator-{{operator.id}}">
+               <span class="sp-check"><i class="fa fa-check"></i></span>
+               <span class="checkbox-text">{{operator.name}}</span>
+           </label>
+       </div>
+       {%endfor%}
+       <input type="hidden" name="operators" value="{{checked_operator_value}}" id="operators">																
+    </div>											
+</div>
+
       <div class="sidebar-block">
           <h4 class="sidebar-title color-dark-2">price range</h4>
           <div class="slider-range color-3 clearfix" data-counter="$" data-position="start" data-from="{{min_price_value}}" data-to="{{max_price_value}}" data-min="{{min_price}}" data-max="{{max_price}}">
