@@ -59,7 +59,7 @@ $(function() {
 	});
 	$('.center-image-op').each(function(){
 		var bgSrc = $(this).attr('src');
-		$(this).parent().addClass('background-block-op').css({'background-image':'linear-gradient(rgba(255,102,0,1), rgba(255,102,0,0.2)), url('+bgSrc+')'});
+		$(this).parent().addClass('background-block-op').css({'background-image':'linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)),url('+bgSrc+')'});
 		$(this).hide();
 	});
 	$('.center-image-index').each(function(){

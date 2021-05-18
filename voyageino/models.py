@@ -125,6 +125,10 @@ class Operator(models.Model):
     def choosed(self):
         counter = self.tour_set.annotate(departs_count=Count("depart"))
         return counter.order_by("-departs_count")[:3]
+
+    def sample(self):
+        #ops = self
+        pass
         
 class Subscriber(models.Model):
     email = models.EmailField()

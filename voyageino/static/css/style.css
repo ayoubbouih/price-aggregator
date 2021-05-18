@@ -662,10 +662,10 @@ header { position: fixed; left: 0px; top: 0px; z-index: 100; width: 100%; -webki
 
 header.scrol .top-header-bar { padding: 15px 0px 0px; }
 
-header.hovered.scrol { background: rgba(0, 0, 0, 0.8); }
+header.hovered.scrol { background: #331501; }
 header.hovered.scrol .nav {padding: 0px 0px;top: 50%;}
 header.hovered.scrol .logo {top: 8px;}
-header.bg-black-o.scrol { background: rgba(0, 0, 0, 0.8); }
+header.bg-black-o.scrol { background: #331501; }
 .sc-1.scrol {height: 60px;}
 .sc-1.scrol .logo {top: -100px;}
 .sc-1.scrol nav.menu {padding-top: 0px;}
@@ -7477,7 +7477,7 @@ a.ui-state-default {
 
 
 #black-header{
-  background: rgba(0, 0, 0, 0.8);
+  background: #331501;
 }
 
 #nav-menu {

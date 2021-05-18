@@ -11,8 +11,6 @@ urlpatterns = [
     path("categorie/<int:id>", views.get_categorie),
     path("search/<int:page>", views.search),
     path("search", views.search),
-    path("tourradar_noce", views.tourradar_noce),
-    path("traveltalk", views.travlertalks),
     path("operator/<int:id>", views.get_operator),
     path("operator/<int:id>/<int:page>", views.get_operator),
     path("operator", views.operator_page),
@@ -20,5 +18,10 @@ urlpatterns = [
     path("remove_favourites/<int:id>", views.remove_favourites),
     path("subscribe", views.subscribe),
     path("newsletter_send", views.newsletter_send),
+
+    
+    path("tourradar_noce", views.tourradar_noce),
+    path("traveltalk", views.travlertalks),
+    path("globus", views.globus),
     
 ]+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
