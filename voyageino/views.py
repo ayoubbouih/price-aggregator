@@ -65,9 +65,8 @@ def add_favourites(request, id):
             added = False
     else:
         fav = id
-        addeed= False
+        added= False
     response = tour_page(request,id,True, added,False)
-    # response =  render(request, "tour_detail.html", context)
     response.set_cookie("fav",fav)
     return response
 
