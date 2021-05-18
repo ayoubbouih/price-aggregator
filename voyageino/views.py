@@ -367,11 +367,15 @@ def travlertalks(request,driver=None):
     tours.delete()
 
     url='https://www.traveltalktours.com/search-tour/?_destination=morocco-tours'
+    if driver == None:
+        PATH = "C:\Program Files\chromedriver.exe"
+        options = Options()
+        options.headless = True
+        driver = webdriver.Chrome(PATH, options=options)
     driver.get(url)
     html = driver.execute_script("return document.documentElement.outerHTML")
     first_page = BeautifulSoup(html,"html.parser")
     deals = first_page.find_all("div",attrs={"class":"dest-tour-card"})
-    f = open("scraping.log","a+")
     for deal in deals:
         try:
             operator = 3
@@ -433,83 +437,109 @@ def travlertalks(request,driver=None):
         except Exception as e:
             print(e, file=f)
             continue
+    print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
 
 def globus(request,driver=None):
     f = open("scraping.log","a+")
-    url="https://www.globusjourneys.com/Vacation-Packages/Tour-Africa/Vacations/"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
-    current_year = soup.find("div",attrs={"id":"current-year"})
-    deals = current_year.find_all("div",attrs={"class":"product-listing-info"})
-    for deal in deals:
-        lien = deal.a.get("href")
-        lien = "https://www.globusjourneys.com"+lien
-        try:
-            operator = 1
-            driver.get(lien)
-            html = driver.execute_script("return document.documentElement.outerHTML")
-            soup = BeautifulSoup(html,"html.parser")
-            title = soup.find("p",attrs={"id":"product-name"}).text
-            first_image = soup.find("div",attrs={"class":"vacation-hero-photo"}).get("style").split("'")[1]
-            images = soup.find_all("li",attrs={"class":"tft-slim-carousel-item"})
-            categorie = 2 #international
-            price = int("".join(soup.find("span",attrs={"class":"price"}).text[1:].split(",")))
-            cities_divs = soup.find("div",attrs={"id":"mapsButtons"}).find_all("div")
-            duree = int(soup.find("p",attrs={"id":"product-description"}).text.strip().split()[0])
-            details = soup.find("div",attrs={"id":"itinerary"})
-            # création du voyage
-            if Tour.objects.count() == 0:
-                id = 1
-            else:
-                id = Tour.objects.latest('id').id + 1
-            t = Tour(id,lien,title,price,str(details),duree,categorie,operator)
-            t.save()
-                # l'ajout des villes au voyage
-            for city in cities_divs:
-                city = city.text.strip()
-                if City.objects.filter(name=city).count() > 0:
-                    t.cities.add(City.objects.filter(name=city).first())
-                else:
-                    id = City.objects.count() + 1
-                    c = City(id,city)
-                    c.save()
-                    t.cities.add(c)
-                # l'ajout des départs au voyage
-            driver.get(lien+"?content=price")
-            html = driver.execute_script("return document.documentElement.outerHTML")
-            soup = BeautifulSoup(html,"html.parser")
-            departs = soup.find_all("div",attrs={"class":"listing"})
-            for depart in departs:
-                dates = depart.find_all("p",attrs={"class":"date-numbers"})
-                from_date = datetime.strptime(dates[0].text.strip(),"%d %b %y")
-                to_date = datetime.strptime(dates[1].text.strip(),"%d %b %y")
-                price = int("".join(depart.find("p",attrs={"class":"price-actual"}).text.split("$")[1].split(",")))
-                if Depart.objects.count() == 0:
+    print("Globus", file=f, flush=True)
+    print("starts in : ",datetime.now(), file=f, flush=True)
+    tours = Tour.objects.filter(operator=1)
+    for tour in tours:
+        tour.image_set.all().delete()
+        tour.depart_set.all().delete()
+    tours.delete()
+
+    urls = ["https://www.globusjourneys.com/Vacation-Packages/Tour-Africa/Vacations/", "https://www.globusjourneys.com/Vacation-Packages/Tour-South-Pacific/Australia/"]
+    for url in urls:
+        if driver == None:
+            PATH = "C:\Program Files\chromedriver.exe"
+            options = Options()
+            options.headless = True
+            driver = webdriver.Chrome(PATH, options=options)
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        current_year = soup.find("div",attrs={"id":"current-year"})
+        deals = current_year.find_all("div",attrs={"class":"product-listing-info"})
+        for deal in deals:
+            lien = deal.a.get("href")
+            lien = "https://www.globusjourneys.com"+lien
+            try:
+                operator = 1
+                driver.get(lien)
+                html = driver.execute_script("return document.documentElement.outerHTML")
+                soup = BeautifulSoup(html,"html.parser")
+                title = soup.find("p",attrs={"id":"product-name"}).text
+                first_image = soup.find("div",attrs={"class":"vacation-hero-photo"}).get("style").split("'")[1]
+                images = soup.find_all("li",attrs={"class":"tft-slim-carousel-item"})
+                categorie = 2 #international
+                price = int("".join(soup.find("span",attrs={"class":"price"}).text[1:].split(",")))
+                cities_divs = soup.find("div",attrs={"id":"mapsButtons"}).find_all("div")
+                duree = int(soup.find("p",attrs={"id":"product-description"}).text.strip().split()[0])
+                details = soup.find("div",attrs={"id":"itinerary"})
+                # création du voyage
+                if Tour.objects.count() == 0:
                     id = 1
                 else:
-                    id = Depart.objects.latest('id').id + 1
-                d = Depart(id,t.id,from_date,to_date,price)
-                d.save()
-            # l'ajout des images
-            if Image.objects.count() == 0:
-                id = 1
-            else:
-                id = Image.objects.latest('id').id + 1
-            i = Image(id,t.id,first_image)
-            i.save()
-            for image in images:
-                image = image.img.get("src")
-                id = Image.objects.latest('id').id + 1
-                i = Image(id,t.id,image)
+                    id = Tour.objects.latest('id').id + 1
+                t = Tour(id,lien,title,price,str(details),duree,categorie,operator)
+                t.save()
+                    # l'ajout des villes au voyage
+                for city in cities_divs:
+                    city = city.text.strip()
+                    if City.objects.filter(name=city).count() > 0:
+                        t.cities.add(City.objects.filter(name=city).first())
+                    else:
+                        id = City.objects.count() + 1
+                        c = City(id,city)
+                        c.save()
+                        t.cities.add(c)
+                    # l'ajout des départs au voyage
+                driver.get(lien+"?content=price")
+                html = driver.execute_script("return document.documentElement.outerHTML")
+                soup = BeautifulSoup(html,"html.parser")
+                departs = soup.find_all("div",attrs={"class":"listing"})
+                for depart in departs:
+                    dates = depart.find_all("p",attrs={"class":"date-numbers"})
+                    from_date = datetime.strptime(dates[0].text.strip(),"%d %b %y")
+                    to_date = datetime.strptime(dates[1].text.strip(),"%d %b %y")
+                    price = int("".join(depart.find("p",attrs={"class":"price-actual"}).text.split("$")[1].split(",")))
+                    if Depart.objects.count() == 0:
+                        id = 1
+                    else:
+                        id = Depart.objects.latest('id').id + 1
+                    d = Depart(id,t.id,from_date,to_date,price)
+                    d.save()
+                # l'ajout des images
+                if Image.objects.count() == 0:
+                    id = 1
+                else:
+                    id = Image.objects.latest('id').id + 1
+                i = Image(id,t.id,first_image)
                 i.save()
-        except Exception as e:
-            print(e, file=f, flush=True)
-            continue
-        f.close()
+                for image in images:
+                    image = image.img.get("src")
+                    id = Image.objects.latest('id').id + 1
+                    i = Image(id,t.id,image)
+                    i.save()
+            except Exception as e:
+                print(e, file=f, flush=True)
+                continue
+            
+    print("ends in : ",datetime.now(), file=f,flush=True)
+    f.close()
     return render(request,"index.html")
 
 def intrepidtravel(request,driver=None): 
+    f = open("scraping.log","a+")
+    print("Intrepid Travel", file=f, flush=True)
+    print("starts in : ",datetime.now(), file=f, flush=True)
+    tours = Tour.objects.filter(operator=2)
+    for tour in tours:
+        tour.image_set.all().delete()
+        tour.depart_set.all().delete()
+    tours.delete()
+
     url = "https://www.intrepidtravel.com/en/morocco"
     if driver == None:
         PATH = "C:\Program Files\chromedriver.exe"
@@ -585,10 +615,20 @@ def intrepidtravel(request,driver=None):
         except Exception as e:
             print(e, file=f)
             
-        print(url, "cities:", len(cities), "images:",len(images), "departs:",len(dates), file=f ,flush=True)
+    print(url, "cities:", len(cities), "images:",len(images), "departs:",len(dates), file=f ,flush=True)
+    print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
 
 def tourradar_noce(request):
+    f = open("scraping.log","a+")
+    print("Tour Radar Honeymoon", file=f, flush=True)
+    print("starts in : ",datetime.now(), file=f, flush=True)
+    tours = Tour.objects.filter(operator=4,category=3)
+    for tour in tours:
+        tour.image_set.all().delete()
+        tour.depart_set.all().delete()
+    tours.delete()
+
     url="https://www.tourradar.com/sc/couples"
     response = requests.get(url)
     soup = BeautifulSoup(response.content,"html.parser")
@@ -658,9 +698,20 @@ def tourradar_noce(request):
             except Exception as e:
                 print(e, file=f)
                 continue
-        f.close()
+    print(url, "cities:", len(cities), "images:",len(images), "departs:",len(dates), file=f ,flush=True)
+    print("ends in : ",datetime.now(), file=f,flush=True)
+    f.close()
 
 def tourradar_national(request):
+    f = open("scraping.log","a+")
+    print("Tour Radar National", file=f, flush=True)
+    print("starts in : ",datetime.now(), file=f, flush=True)
+    tours = Tour.objects.filter(operator=4,category=1)
+    for tour in tours:
+        tour.image_set.all().delete()
+        tour.depart_set.all().delete()
+    tours.delete()
+    
     url='https://www.tourradar.com/d/morocco'
     response = requests.get(url)
     first_page = BeautifulSoup(response.content,"html.parser")
@@ -724,5 +775,7 @@ def tourradar_national(request):
         except Exception as e:
             print(e, file=f)
             continue
+    print(url, "cities:", len(cities), "images:",len(images), "departs:",len(dates), file=f ,flush=True)
+    print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
 
