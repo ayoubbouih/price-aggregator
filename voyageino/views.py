@@ -88,6 +88,7 @@ def home_page(request,subscription=False,email=None):
         "categorie":cat, 
         "operator":op,
         "tours":tours[:8],
+        "all_tours":tours.count()//10*10,
         "from_date":datetime.strftime(d1, "%m/%d/%Y"),
         "to_date":datetime.strftime(d2, "%m/%d/%Y"),
         "date_value":datetime.strftime(d1, "%m/%d/%Y"),
