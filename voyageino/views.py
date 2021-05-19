@@ -11,7 +11,8 @@ from aggregator.settings import EMAIL_HOST_USER
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
-from django.template import Context
+from django.db.models import Count
+
 
 def subscribe(request):
     if request.method == 'POST':
@@ -25,13 +26,13 @@ def newsletter_send(request):
     htmly = get_template('email.html')
     tours = Tour.objects.all().order_by("?")
     d = {"principal":tours[0],"tours":tours[1:4]}
-
-    subject, from_email, to = 'hello', EMAIL_HOST_USER, 'ay.bouihrouchane@gmail.com'
+    subject, from_email = 'Checkout our new tours', EMAIL_HOST_USER
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
-    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-    msg.attach_alternative(html_content, "text/html")
-    msg.send()
+    for subscriber in Subscriber.objects.all():
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [subscriber.email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
 
 def in_favourites(request , id):
     if "fav" in request.COOKIES:
@@ -152,22 +153,21 @@ def search(request,page=1):
 
         checked_categories = []
         checked_operator = []
-        operators_ids = []
-        categories_ids = []
+        operators = []
+        categories = []
         if request.GET.get("categories"):
             if request.GET["categories"] != ['[]']:
                 categories = request.GET["categories"].split(",")
                 for category in categories:
                     checked_categories.append(int(category))
-                    #categories_ids.append(int(category))
                 results = results & Tour.objects.filter(categorie__in=checked_categories)
         if request.GET.get("operators"):
             if request.GET["operators"] != ['[]']:
                 operators = request.GET["operators"].split(",")
                 for operator in operators:
                     checked_operator.append(int(operator))
-                    #operators_ids.append(int(operator))
                 results = results & Tour.objects.filter(operator__in=checked_operator)
+            
     
     total = len(results)
     from_date = datetime.now().date()
@@ -252,12 +252,12 @@ def get_operator(request, id, page=1):
     max_duration_value = Operator.objects.get(id=id).tour_set.all().order_by("duree").last().duree
     d1 = datetime.now().date()
     d2 = Depart.objects.all().order_by("-to_date").first().to_date
-    checked_operator = [id]
+    checked_operator = str(id)
     context = {
         "Tours":Operator.objects.get(id=id).tour_set.all()[9 * (page - 1):9 * page],
         "operators": Operator.objects.all(),
-        "checked_operator":checked_operator,
-        "checked_operator_value":",".join(checked_operator),
+        "checked_operator":[id],
+        "checked_operator_value":checked_operator,
         "pages":range(1 , nb+1),
         "selected":selected,
         "suivant":suivant,
@@ -275,7 +275,6 @@ def get_operator(request, id, page=1):
         "from_date_value":d1.strftime("%m/%d/%Y"),
         "to_date":d2.strftime("%m/%d/%Y"),
         "to_date_value":d2.strftime("%m/%d/%Y"),
-        "from_date_value":Operator.objects.get(id = id),
         "min_price_value":min_price_value,
         "max_price_value":max_price_value,
         "min_duration_value":min_duration_value,
@@ -330,7 +329,7 @@ def get_categorie(request, id,page=1):
         "to_date":d2.strftime("%m/%d/%Y"),
         "to_date_value":d2.strftime("%m/%d/%Y"),
         "checked_categories":[id],
-        "checked_categories_value":",".join([id]),
+        "checked_categories_value":str(id),
         "min_price_value":min_price_value,
         "max_price_value":max_price_value,
         "min_duration_value":min_duration_value,
@@ -339,39 +338,45 @@ def get_categorie(request, id,page=1):
     return render(request,'tour_list.html',context)
 
 def update(request):
-    f = open("scraping.log","a+")
-    print("starts in : ",datetime.now(), file=f, flush=True)
-    Tour.objects.all().delete()
-    Image.objects.all().delete()
-    Depart.objects.all().delete()
-    City.objects.all().delete()
-    PATH = "C:\Program Files\chromedriver.exe"
-    options = Options()
-    options.headless = True
-    driver = webdriver.Chrome(PATH, options=options)
-    globus(request,driver)
-    intrepidtravel(request,driver)
-    tourradar(request)
-    travlertalks(request,driver)
-    print("ends in : ",datetime.now(), file=f,flush=True)
-    driver.quit()
+    if request.user.is_superuser or True:
+        f = open("scraping.log","a+")
+        print("starts in : ",datetime.now(), file=f, flush=True)
+        Tour.objects.all().delete()
+        Image.objects.all().delete()
+        Depart.objects.all().delete()
+        City.objects.all().delete()
+        PATH = "C:\Program Files\chromedriver.exe"
+        options = Options()
+        options.headless = True
+        driver = webdriver.Chrome(PATH, options=options)
+        globus(request,driver)
+        intrepidtravel(request,driver)
+        tourradar_noce(request)
+        tourradar_national(request)
+        travlertalks(request,driver)
+        print("ends in : ",datetime.now(), file=f,flush=True)
+        driver.quit()
+        T = Tour.objects.annotate(departs_count=Count("depart"))
+        T = Tour.objects.annotate(images_count=Count("Image"))
+        T.filter(departs_count=0).delete()
+        T.filter(images_count=0).delete()
+        newsletter_send(request)
     
 def travlertalks(request,driver=None):
     f = open("scraping.log","a+")
     print("Travel Talks", file=f, flush=True)
     print("starts in : ",datetime.now(), file=f, flush=True)
-    tours = Tour.objects.filter(operator=3)
-    for tour in tours:
-        tour.image_set.all().delete()
-        tour.depart_set.all().delete()
-    tours.delete()
-
     url='https://www.traveltalktours.com/search-tour/?_destination=morocco-tours'
     if driver == None:
         PATH = "C:\Program Files\chromedriver.exe"
         options = Options()
         options.headless = True
         driver = webdriver.Chrome(PATH, options=options)
+        tours = Tour.objects.filter(operator=3)
+        for tour in tours:
+            tour.image_set.all().delete()
+            tour.depart_set.all().delete()
+        tours.delete()
     driver.get(url)
     html = driver.execute_script("return document.documentElement.outerHTML")
     first_page = BeautifulSoup(html,"html.parser")
@@ -444,19 +449,18 @@ def globus(request,driver=None):
     f = open("scraping.log","a+")
     print("Globus", file=f, flush=True)
     print("starts in : ",datetime.now(), file=f, flush=True)
-    tours = Tour.objects.filter(operator=1)
-    for tour in tours:
-        tour.image_set.all().delete()
-        tour.depart_set.all().delete()
-    tours.delete()
-
-    urls = ["https://www.globusjourneys.com/Vacation-Packages/Tour-Africa/Vacations/", "https://www.globusjourneys.com/Vacation-Packages/Tour-South-Pacific/Australia/"]
-    for url in urls:
-        if driver == None:
+    if driver == None:
             PATH = "C:\Program Files\chromedriver.exe"
             options = Options()
             options.headless = True
             driver = webdriver.Chrome(PATH, options=options)
+            tours = Tour.objects.filter(operator=1)
+            for tour in tours:
+                tour.image_set.all().delete()
+                tour.depart_set.all().delete()
+            tours.delete()
+    urls = ["https://www.globusjourneys.com/Vacation-Packages/Tour-Africa/Vacations/", "https://www.globusjourneys.com/Vacation-Packages/Tour-South-Pacific/Australia/","https://www.globusjourneys.com/Vacation-Packages/Tour-South-America/Central-America/"]
+    for url in urls:
         response = requests.get(url)
         soup = BeautifulSoup(response.content, 'html.parser')
         current_year = soup.find("div",attrs={"id":"current-year"})
@@ -528,24 +532,22 @@ def globus(request,driver=None):
             
     print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
-    return render(request,"index.html")
 
 def intrepidtravel(request,driver=None): 
     f = open("scraping.log","a+")
     print("Intrepid Travel", file=f, flush=True)
     print("starts in : ",datetime.now(), file=f, flush=True)
-    tours = Tour.objects.filter(operator=2)
-    for tour in tours:
-        tour.image_set.all().delete()
-        tour.depart_set.all().delete()
-    tours.delete()
-
-    url = "https://www.intrepidtravel.com/en/morocco"
     if driver == None:
         PATH = "C:\Program Files\chromedriver.exe"
         options = Options()
         options.headless = True
         driver = webdriver.Chrome(PATH, options=options)
+        tours = Tour.objects.filter(operator=2)
+        for tour in tours:
+            tour.image_set.all().delete()
+            tour.depart_set.all().delete()
+        tours.delete()
+    url = "https://www.intrepidtravel.com/en/morocco"
     driver.get(url)
     html = driver.execute_script("return document.documentElement.outerHTML")
     first_page = BeautifulSoup(html,"html.parser")
@@ -615,7 +617,6 @@ def intrepidtravel(request,driver=None):
         except Exception as e:
             print(e, file=f)
             
-    print(url, "cities:", len(cities), "images:",len(images), "departs:",len(dates), file=f ,flush=True)
     print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
 
@@ -623,12 +624,11 @@ def tourradar_noce(request):
     f = open("scraping.log","a+")
     print("Tour Radar Honeymoon", file=f, flush=True)
     print("starts in : ",datetime.now(), file=f, flush=True)
-    tours = Tour.objects.filter(operator=4,category=3)
+    tours = Tour.objects.filter(operator=4,categorie=3)
     for tour in tours:
         tour.image_set.all().delete()
         tour.depart_set.all().delete()
     tours.delete()
-
     url="https://www.tourradar.com/sc/couples"
     response = requests.get(url)
     soup = BeautifulSoup(response.content,"html.parser")
@@ -698,7 +698,6 @@ def tourradar_noce(request):
             except Exception as e:
                 print(e, file=f)
                 continue
-    print(url, "cities:", len(cities), "images:",len(images), "departs:",len(dates), file=f ,flush=True)
     print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
 
@@ -706,7 +705,7 @@ def tourradar_national(request):
     f = open("scraping.log","a+")
     print("Tour Radar National", file=f, flush=True)
     print("starts in : ",datetime.now(), file=f, flush=True)
-    tours = Tour.objects.filter(operator=4,category=1)
+    tours = Tour.objects.filter(operator=4,categorie=1)
     for tour in tours:
         tour.image_set.all().delete()
         tour.depart_set.all().delete()
@@ -775,7 +774,6 @@ def tourradar_national(request):
         except Exception as e:
             print(e, file=f)
             continue
-    print(url, "cities:", len(cities), "images:",len(images), "departs:",len(dates), file=f ,flush=True)
     print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
 
