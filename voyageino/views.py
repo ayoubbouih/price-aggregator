@@ -374,6 +374,9 @@ def update(request):
         newsletter_send(request)
     
 def travlertalks(request,driver=None):
+    travlertalks_national(request,driver)
+
+def travlertalks_national(request,driver=None):
     f = open("scraping.log","a+")
     print("Travel Talks", file=f, flush=True)
     print("starts in : ",datetime.now(), file=f, flush=True)
@@ -457,6 +460,9 @@ def travlertalks(request,driver=None):
     f.close()
 
 def globus(request,driver=None):
+    globus_international(request,driver)
+
+def globus_international(request,driver=None):
     f = open("scraping.log","a+")
     print("Globus", file=f, flush=True)
     print("starts in : ",datetime.now(), file=f, flush=True)
@@ -543,6 +549,10 @@ def globus(request,driver=None):
             
     print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
+
+def intrepidtravel(request,driver=None):
+    intrepidtravel_international(request,driver)
+    intrepidtravel_national(request,driver)
 
 def intrepidtravel_international(request,driver=None): 
     f = open("scraping.log","a+")
@@ -719,6 +729,10 @@ def intrepidtravel_national(request,driver=None):
     print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
 
+def touraddar(request):
+    tourradar_noce(request)
+    tourradar_national(request)
+
 def tourradar_noce(request):
     f = open("scraping.log","a+")
     print("Tour Radar Honeymoon", file=f, flush=True)
@@ -877,6 +891,9 @@ def tourradar_national(request):
     f.close()
 
 def cosmos(request,driver=None):
+    cosmos_internatioanl(request,driver)
+
+def cosmos_internatioanl(request,driver=None):
     f = open("scraping.log","a+")
     print("Cosmos", file=f, flush=True)
     print("starts in : ",datetime.now(), file=f, flush=True)
@@ -964,3 +981,10 @@ def cosmos(request,driver=None):
             
     print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
+
+def scraping(request):
+
+    context = {
+        "operators":Operator.objects.all(),
+        "categories":categorie.objects.all(),}
+    return render(request, "scraping.html",context)

@@ -1,0 +1,38 @@
+{%extends "template.html" %}
+{%block inner_page%}
+{%load static%}
+<div class="main-wraper bg-white padd-90">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-8 col-sm-offset-2">
+				<div class="second-title">
+					<h2>Scraping by operator</h2>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+            {%for operator in operators%}
+			<div class="col-xs-12 col-sm-12 col-md-4 operator-box">
+				<div class="tariff style-1 bg-white">
+					<div class="circle-wrapper">
+	                    <div class="circle-entry clearfix">
+	                        <div class="circle center-block color-dark-2" data-startdegree="0" data-dimension="180" data-text="$10/mon" data-width="5" data-fontsize="28" data-percent="25" data-fgcolor="#ff6600" data-bgcolor="#f8f8f8"></div>
+	                    </div> 						
+					</div>
+					<div class="tariff-title color-dark-2"><img class="operator-image" src="{%static operator.photo %}"/></div>
+					<div class="tariff-content ">
+						<div class="tariff-line color-grey"><b>Tours count : </b> {{operator.tour_set.all.count}} tour</div>
+						<a href="/{{operator}}" class="c-button b-50 bg-dr-blue-2 hv-dr-blue-2-o"><span>start scraping </span></a>
+					</div>
+				</div>
+			</div>		
+            {%endfor%}			
+		</div>
+	</div>
+</div>
+{%endblock%}
+{%block scripts%}
+<script>
+$("header").attr("id","black-header");
+</script>
+{%endblock%}

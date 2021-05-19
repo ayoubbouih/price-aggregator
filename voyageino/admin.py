@@ -7,13 +7,16 @@ from django.utils.translation import ngettext
 
 @admin.register(Tour)
 class TourAdmin(admin.ModelAdmin):
-    list_display = ("title", "categorie","price","duree","cities_count","departs_count")
+    list_display = ("title", "categorie","price","duree","cities_count","departs_count","operator")
 
     def cities_count(self, obj):
         return obj.cities.count()
     
     def departs_count(self, obj):
         return obj.depart_set.count()
+    
+    def operator(self,obj):
+        return obj.operator.name
     
     search_fields = ('title__startswith','title__endswith')
 

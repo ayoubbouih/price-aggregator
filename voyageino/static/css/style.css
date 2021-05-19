@@ -7495,3 +7495,11 @@ a.ui-state-default {
 .hidden-desktop {
   display: none;
 }
+img.operator-image {
+    height: 80px;
+    width: 200px;
+}
+
+.operator-box {
+    margin-bottom: 30px;
+}
