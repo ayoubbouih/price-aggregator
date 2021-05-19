@@ -68,31 +68,6 @@ class categorie(models.Model):
         r = [l[-3],l[-2],l[-1]]
         return "/".join(r)
 
-class Review(models.Model):
-    note = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(5)])
-    name = models.TextField()
-    description = models.TextField()
-    tour = models.ForeignKey('Tour',on_delete=models.CASCADE)
-    date = models.DateTimeField(blank=True,null=True)
-
-
-    def publish(self):
-        self.save()
-    
-    def displayed_date(self):
-        #conversion de date de publication en chaine de caractere
-        if self.date is not None:
-            return self.date.strftime('%d-%m-%Y')
-        return ""
-    
-    def rate(self):
-        l = list()
-        for i in range(self.note):
-            l.append(True)
-        for i in range(self.note,5):
-            l.append(False)
-        return l
-
 class Image(models.Model):
     tour = models.ForeignKey('tour',on_delete=models.CASCADE)
     url = models.TextField()

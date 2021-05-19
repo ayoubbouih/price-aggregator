@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tour,City,categorie,Review,Image,Depart,Operator,Subscriber
+from .models import Tour,City,categorie,Image,Depart,Operator,Subscriber
 
 # Register your models here.
 from django.contrib import messages

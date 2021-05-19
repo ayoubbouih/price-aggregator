@@ -6,7 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import re
 from datetime import datetime
-from .models import Tour,City,categorie,Review,Image,Depart,Operator,Subscriber
+from .models import Tour,City,categorie,Image,Depart,Operator,Subscriber
 from aggregator.settings import EMAIL_HOST_USER
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
@@ -338,7 +338,7 @@ def get_categorie(request, id,page=1):
     return render(request,'tour_list.html',context)
 
 def update(request):
-    if request.user.is_superuser or True:
+    if request.user.is_superuser:
         f = open("scraping.log","a+")
         print("starts in : ",datetime.now(), file=f, flush=True)
         Tour.objects.all().delete()
