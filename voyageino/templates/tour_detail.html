@@ -33,14 +33,8 @@
 					<h2 class="detail-title color-dark-2">{{tour}}</h2>
 					<div class="detail-category color-grey-3">{{tour.categorie.name}}</div>
 					<div class="detail-rate rate-wrap clearfix">
-				        <div class="rate">
-							<span class="fa fa-star color-yellow"></span>
-							<span class="fa fa-star color-yellow"></span>
-							<span class="fa fa-star color-yellow"></span>
-							<span class="fa fa-star color-yellow"></span>
-							<span class="fa fa-star color-yellow"></span>
-						</div>
-				      	<i>{{tour.review_set.count}} Reviews</i> 
+				        
+				      	 
 			       	</div>
 			    </div>
 			    <div class="col-xs-12 col-sm-4">
@@ -168,7 +162,6 @@
 							<p class="color-grey-9">visited cities: <span class="color-white">{{tour.printable_cities}}</span></p>
 							<p class="color-grey-9">next departure: <span class="color-white">{%if tour.next_depart is not None%}{{tour.next_depart}}{%else%}No depart scheudled for the moment{%endif%}</span></p>
 							<p class="color-grey-9">Duration: <span class="color-white">{{tour.duree}} Days</span></p>
-							 <p class="color-grey-9">rate: <span class="fa fa-star color-yellow"></span><span class="fa fa-star color-yellow"></span><span class="fa fa-star color-yellow"></span><span class="fa fa-star color-yellow"></span><span class="fa fa-star color-yellow"></span></p>
 						</div>
 						<div class="details-btn">
 							{%if favourite%}
