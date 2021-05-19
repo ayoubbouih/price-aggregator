@@ -9,7 +9,6 @@ urlpatterns = [
     path("tour/<int:id>", views.tour_page),
     path("categorie/<int:id>/<int:page>", views.get_categorie),
     path("categorie/<int:id>", views.get_categorie),
-    path("search/<int:page>", views.search),
     path("search", views.search),
     path("operator/<int:id>", views.get_operator),
     path("operator/<int:id>/<int:page>", views.get_operator),
@@ -20,8 +19,11 @@ urlpatterns = [
     path("newsletter_send", views.newsletter_send),
 
     
+    path("intrepidtravel_international",views.intrepidtravel_international),
+    path("intrepidtravel_national",views.intrepidtravel_national),
     path("tourradar_noce", views.tourradar_noce),
     path("traveltalk", views.travlertalks),
     path("globus", views.globus),
+    path("cosmos",views.cosmos),
     
 ]+static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

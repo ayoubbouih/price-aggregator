@@ -90,7 +90,6 @@ class Operator(models.Model):
     name = models.TextField()
     image = models.ImageField(blank=True,null=True,upload_to='voyageino/static/img/operator/')
     url = models.URLField()
-    description = models.TextField()
 
     def photo(self):
         l = str(self.image).split("/")
@@ -101,9 +100,9 @@ class Operator(models.Model):
         counter = self.tour_set.annotate(departs_count=Count("depart"))
         return counter.order_by("-departs_count")[:3]
 
-    def sample(self):
-        #ops = self
-        pass
+    def __str__(self):
+        return self.name
+
         
 class Subscriber(models.Model):
     email = models.EmailField()

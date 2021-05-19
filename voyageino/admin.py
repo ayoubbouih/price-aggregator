@@ -61,7 +61,10 @@ class DepartAdmin(admin.ModelAdmin):
 
 @admin.register(Operator)
 class OperatorAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "url")
+    list_display = ("id", "name", "url",'tours_count')
+
+    def tours_count(self, obj):
+        return obj.tour_set.count()
 
 @admin.register(Subscriber)
 class SubscriberAdmin(admin.ModelAdmin):
