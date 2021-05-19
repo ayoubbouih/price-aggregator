@@ -357,7 +357,7 @@ def update(request):
         print("ends in : ",datetime.now(), file=f,flush=True)
         driver.quit()
         T = Tour.objects.annotate(departs_count=Count("depart"))
-        T = Tour.objects.annotate(images_count=Count("Image"))
+        T = Tour.objects.annotate(images_count=Count("image"))
         T.filter(departs_count=0).delete()
         T.filter(images_count=0).delete()
         newsletter_send(request)
