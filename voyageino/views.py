@@ -338,7 +338,7 @@ def get_categorie(request, id,page=1):
     return render(request,'tour_list.html',context)
 
 def update(request):
-    if request.user.is_superuser or True:
+    if request.user.is_superuser:
         f = open("scraping.log","a+")
         print("starts in : ",datetime.now(), file=f, flush=True)
         Tour.objects.all().delete()
@@ -357,7 +357,7 @@ def update(request):
         print("ends in : ",datetime.now(), file=f,flush=True)
         driver.quit()
         T = Tour.objects.annotate(departs_count=Count("depart"))
-        T = Tour.objects.annotate(images_count=Count("Image"))
+        T = Tour.objects.annotate(images_count=Count("image"))
         T.filter(departs_count=0).delete()
         T.filter(images_count=0).delete()
         newsletter_send(request)
