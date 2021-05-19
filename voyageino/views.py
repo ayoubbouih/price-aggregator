@@ -983,8 +983,11 @@ def cosmos_internatioanl(request,driver=None):
     f.close()
 
 def scraping(request):
-
-    context = {
-        "operators":Operator.objects.all(),
-        "categories":categorie.objects.all(),}
-    return render(request, "scraping.html",context)
+    
+    if request.user.is_superuser:
+        context = {
+            "operators":Operator.objects.all(),
+            "categories":categorie.objects.all(),}
+        return render(request, "scraping.html",context)
+    else:
+        return home_page(request)
