@@ -73,7 +73,7 @@ def add_favourites(request, id):
     else:
         fav = id
         added= False
-    response = tour_page(request,id,True, added,False)
+    response = tour_page(request,id,True, True,False)
     response.set_cookie("fav",fav)
     return response
 
@@ -372,9 +372,12 @@ def update(request):
         T.filter(departs_count=0).delete()
         T.filter(images_count=0).delete()
         newsletter_send(request)
+    context = {"scraping" : True}
+    return render(request,"scraping.html",context)
     
 def travlertalks(request,driver=None):
     travlertalks_national(request,driver)
+    return scraping(request, True)
 
 def travlertalks_national(request,driver=None):
     f = open("scraping.log","a+")
@@ -461,6 +464,7 @@ def travlertalks_national(request,driver=None):
 
 def globus(request,driver=None):
     globus_international(request,driver)
+    return scraping(request, True)
 
 def globus_international(request,driver=None):
     f = open("scraping.log","a+")
@@ -553,6 +557,7 @@ def globus_international(request,driver=None):
 def intrepidtravel(request,driver=None):
     intrepidtravel_international(request,driver)
     intrepidtravel_national(request,driver)
+    return scraping(request, True)
 
 def intrepidtravel_international(request,driver=None): 
     f = open("scraping.log","a+")
@@ -732,6 +737,7 @@ def intrepidtravel_national(request,driver=None):
 def touraddar(request):
     tourradar_noce(request)
     tourradar_national(request)
+    return scraping(request, True)
 
 def tourradar_noce(request):
     f = open("scraping.log","a+")
@@ -892,6 +898,7 @@ def tourradar_national(request):
 
 def cosmos(request,driver=None):
     cosmos_internatioanl(request,driver)
+    return scraping(request, True)
 
 def cosmos_internatioanl(request,driver=None):
     f = open("scraping.log","a+")
@@ -982,12 +989,13 @@ def cosmos_internatioanl(request,driver=None):
     print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
 
-def scraping(request):
+def scraping(request, scraping=False):
     
     if request.user.is_superuser:
         context = {
             "operators":Operator.objects.all(),
-            "categories":categorie.objects.all(),}
+            "categories":categorie.objects.all(),
+            "scraping":scraping}
         return render(request, "scraping.html",context)
     else:
         return home_page(request)
