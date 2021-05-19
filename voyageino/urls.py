@@ -18,10 +18,9 @@ urlpatterns = [
     path("subscribe", views.subscribe),
     path("newsletter_send", views.newsletter_send),
 
-    
-    path("intrepidtravel_international",views.intrepidtravel_international),
-    path("intrepidtravel_national",views.intrepidtravel_national),
-    path("tourradar_noce", views.tourradar_noce),
+    path("scraping",views.scraping),
+    path("intrepidtravel",views.intrepidtravel),
+    path("tourradar", views.touraddar),
     path("traveltalk", views.travlertalks),
     path("globus", views.globus),
     path("cosmos",views.cosmos),
