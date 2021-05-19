@@ -7483,3 +7483,15 @@ a.ui-state-default {
 #nav-menu {
   margin-top: 20px
 }
+
+.svg-inline--fa {
+  display: none;
+}
+
+.mobile-itinerary {
+  display: none;
+}
+
+.hidden-desktop {
+  display: none;
+}
