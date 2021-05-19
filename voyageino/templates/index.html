@@ -41,14 +41,25 @@
 		 </div>
 	</div>
   </div>
-  {%if subscription%}
+  {%if subscription == "warning"%}
+  <div class="bootoast-container bottom center">
+	  <div class="bootoast alert alert-warning alert-dismissible" style="opacity: 1;">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">×</span>
+		</button>
+		<span class="bootoast-alert-container">
+			<span class="bootoast-alert-content">this email already subscribed in our newsletter</span>
+		</span>
+	</div>
+</div>
+  {%elif subscription%}
   <div class="bootoast-container bottom center">
 	  <div class="bootoast alert alert-success alert-dismissible" style="opacity: 1;">
 		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 			<span aria-hidden="true">×</span>
 		</button>
 		<span class="bootoast-alert-container">
-			<span class="bootoast-alert-content">{{subscription}} was added successfuly to our newsletter</span>
+			<span class="bootoast-alert-content">{{email}} was added successfuly to our newsletter</span>
 		</span>
 	</div>
 </div>
@@ -108,7 +119,7 @@
 </div>
 
 <div class="main-wraper padd-90">
-	<img class="center-image-index" src="{% static 'img/home_10/bg_1.jpg' %}" alt="">
+	<img class="center-image index" src="{% static 'img/home_10/bg_1.jpg' %}" alt="">
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12 col-sm-8 col-sm-offset-2">

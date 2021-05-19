@@ -17,9 +17,12 @@ from django.db.models import Count
 def subscribe(request):
     if request.method == 'POST':
         if request.POST.get("email"):
-            s = Subscriber(None, request.POST["email"])
-            s.save()
-            return home_page(request,request.POST["email"])
+            if Subscriber.objects.filter(email=request.POST["email"].lower()).exists():
+                return home_page(request,"warning",request.POST["email"])
+            else:
+                s = Subscriber(None,request.POST["email"].lower())
+                s.save()
+            return home_page(request,True,request.POST["email"])
 
 def newsletter_send(request):
     plaintext = get_template('email.html')
@@ -74,11 +77,10 @@ def add_favourites(request, id):
     response.set_cookie("fav",fav)
     return response
 
-def home_page(request,subscription=False):
+def home_page(request,subscription=False,email=None):
     cat = categorie.objects.all()
     op = Operator.objects.all()
     tours = Tour.objects.all().order_by("?")
-    cities = City.objects.all()
     d1 = datetime.now().date()
     d2 = Depart.objects.all().order_by("-to_date").first().to_date
     context = {
@@ -89,7 +91,8 @@ def home_page(request,subscription=False):
         "from_date":datetime.strftime(d1, "%m/%d/%Y"),
         "to_date":datetime.strftime(d2, "%m/%d/%Y"),
         "date_value":datetime.strftime(d1, "%m/%d/%Y"),
-        "subscription":subscription
+        "subscription":subscription,
+        "email":email
     }
     return render(request,"index.html",context)
 
