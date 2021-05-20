@@ -26,6 +26,15 @@
                             <li class="type-1">
                                 <a href="/operator">Operators</a>
                             </li>
+                            {% if logged_in %}
+                            <li class="type-1">
+                                <a href="/logout">Logout</a>
+                            </li>
+                            {% else %}
+                            <li class="type-1">
+                                <a href="/login">Login</a>
+                            </li>
+                            {% endif %}
                         </ul>
                     </nav>
                  </div>

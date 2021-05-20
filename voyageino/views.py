@@ -12,6 +12,8 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.db.models import Count
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 
 
 def subscribe(request):
@@ -77,7 +79,7 @@ def add_favourites(request, id):
     response.set_cookie("fav",fav)
     return response
 
-def home_page(request,subscription=False,email=None):
+def home_page(request,subscription=False,email=None,logged_in=False,logged_out=False):
     cat = categorie.objects.all()
     op = Operator.objects.all()
     tours = Tour.objects.all().order_by("?")
@@ -93,7 +95,9 @@ def home_page(request,subscription=False,email=None):
         "to_date":datetime.strftime(d2, "%m/%d/%Y"),
         "date_value":datetime.strftime(d1, "%m/%d/%Y"),
         "subscription":subscription,
-        "email":email
+        "email":email,
+        "logged_in":logged_in,
+        "logged_out":logged_out,
     }
     return render(request,"index.html",context)
 
@@ -107,6 +111,29 @@ def operator_page(request):
     op = Operator.objects.all()
     context = {"operator":op,}
     return render(request,"tour_operator.html",context)
+
+def login(request,error=False):
+    if request.user.is_authenticated:
+        return home_page(request)
+    else:
+        context={
+            "error":error,
+        }
+        return render(request,"login.html",context)
+
+def login_process(request):
+    username = request.POST["email"]
+    password = request.POST["password"]
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return home_page(request,logged_in=True)
+    else:
+        return login(request,error=True)
+
+def logout_process(request):
+    logout(request)
+    return home_page(request,logged_out=True)
 
 def page_not_found_view(request, exception=None):
     return render(request,"404.html")

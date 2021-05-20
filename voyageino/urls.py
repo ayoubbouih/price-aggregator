@@ -17,6 +17,9 @@ urlpatterns = [
     path("remove_favourites/<int:id>", views.remove_favourites),
     path("subscribe", views.subscribe),
     path("newsletter_send", views.newsletter_send),
+    path("login", views.login),
+    path("login_process", views.login_process),
+    path("logout", views.logout_process),
 
     path("scraping",views.scraping),
     path("intrepidtravel",views.intrepidtravel),

@@ -41,29 +41,53 @@
 		 </div>
 	</div>
   </div>
-  {%if subscription == "warning"%}
-  <div class="bootoast-container bottom center">
-	  <div class="bootoast alert alert-warning alert-dismissible" style="opacity: 1;">
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-			<span aria-hidden="true">×</span>
-		</button>
-		<span class="bootoast-alert-container">
-			<span class="bootoast-alert-content">this email already subscribed in our newsletter</span>
-		</span>
+	{%if logged_out%}
+	<div class="bootoast-container bottom center">
+		<div class="bootoast alert alert-success alert-dismissible" style="opacity: 1;">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">×</span>
+			</button>
+			<span class="bootoast-alert-container">
+				<span class="bootoast-alert-content">You have successfully logged out</span>
+			</span>
+		</div>
 	</div>
-</div>
-  {%elif subscription%}
-  <div class="bootoast-container bottom center">
-	  <div class="bootoast alert alert-success alert-dismissible" style="opacity: 1;">
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-			<span aria-hidden="true">×</span>
-		</button>
-		<span class="bootoast-alert-container">
-			<span class="bootoast-alert-content">{{email}} was added successfuly to our newsletter</span>
-		</span>
+	{%endif%}
+	{%if logged_in%}
+	<div class="bootoast-container bottom center">
+		<div class="bootoast alert alert-success alert-dismissible" style="opacity: 1;">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">×</span>
+			</button>
+			<span class="bootoast-alert-container">
+				<span class="bootoast-alert-content">You have sucessfully logged in</span>
+			</span>
+		</div>
 	</div>
-</div>
-  {%endif%}
+	{%endif%}
+	{%if subscription == "warning"%}
+	<div class="bootoast-container bottom center">
+		<div class="bootoast alert alert-warning alert-dismissible" style="opacity: 1;">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">×</span>
+			</button>
+			<span class="bootoast-alert-container">
+				<span class="bootoast-alert-content">this email already subscribed in our newsletter</span>
+			</span>
+		</div>
+	</div>
+	{%elif subscription%}
+	<div class="bootoast-container bottom center">
+		<div class="bootoast alert alert-success alert-dismissible" style="opacity: 1;">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">×</span>
+			</button>
+			<span class="bootoast-alert-container">
+				<span class="bootoast-alert-content">{{email}} was added successfuly to our newsletter</span>
+			</span>
+		</div>
+	</div>
+	{%endif%}
 <!--TOUR-ITEM-->
 <div class="main-wraper padd-90">
 	<div class="container">
