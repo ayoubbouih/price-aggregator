@@ -138,3 +138,5 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'voyageino.com@gmail.com'
 EMAIL_HOST_PASSWORD = 'd7d9ff00A@@'
 
+
+#LOGIN_REDIRECT_URL = 'home_page'
