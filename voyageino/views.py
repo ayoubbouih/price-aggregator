@@ -172,11 +172,19 @@ def search(request,page=1):
                 for operator in operators:
                     checked_operator.append(int(operator))
                 results = results & Tour.objects.filter(operator__in=checked_operator)
-            
+    
+    #tri des resultats
+    # par defaut price ASC
+    if not request.GET.get("sort"):
+        sort = "price"
+    else:
+        sort = request.GET["sort"]
+    results = results.order_by(sort)
+
+    #nous aurons besion de recuperer les parametres 
     link=[]
     for item in request.GET.items():
         link.append(item[0]+'='+item[1])
-    
     total = len(results)
     from_date = datetime.now().date()
     from_date_value = datetime.strftime(date_min, "%m/%d/%Y")
