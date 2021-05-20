@@ -377,6 +377,7 @@ def update(request):
     
 def travlertalks(request,driver=None):
     travlertalks_national(request,driver)
+    newsletter_send(request)
     return scraping(request, True)
 
 def travlertalks_national(request,driver=None):
@@ -464,6 +465,7 @@ def travlertalks_national(request,driver=None):
 
 def globus(request,driver=None):
     globus_international(request,driver)
+    newsletter_send(request)
     return scraping(request, True)
 
 def globus_international(request,driver=None):
@@ -557,6 +559,8 @@ def globus_international(request,driver=None):
 def intrepidtravel(request,driver=None):
     intrepidtravel_international(request,driver)
     intrepidtravel_national(request,driver)
+    newsletter_send(request)
+
     return scraping(request, True)
 
 def intrepidtravel_international(request,driver=None): 
@@ -737,6 +741,7 @@ def intrepidtravel_national(request,driver=None):
 def touraddar(request):
     tourradar_noce(request)
     tourradar_national(request)
+    newsletter_send(request)
     return scraping(request, True)
 
 def tourradar_noce(request):
@@ -898,6 +903,7 @@ def tourradar_national(request):
 
 def cosmos(request,driver=None):
     cosmos_internatioanl(request,driver)
+    newsletter_send(request)
     return scraping(request, True)
 
 def cosmos_internatioanl(request,driver=None):
