@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    path("",views.home_page),
+    path("",views.home_page, name='home_page'),
     path('update', views.update, name='update'),
     path("tour/<int:id>", views.tour_page),
     path("categorie/<int:id>/<int:page>", views.get_categorie),
@@ -17,7 +17,7 @@ urlpatterns = [
     path("remove_favourites/<int:id>", views.remove_favourites),
     path("subscribe", views.subscribe),
     path("newsletter_send", views.newsletter_send),
-    path("login", views.login_page),
+    path("login", views.login_page, name="login_page"),
     path("login_process", views.login_process),
     path("logout", views.logout_process),
     path("register", views.register),
