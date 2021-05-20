@@ -199,14 +199,14 @@ def search(request,page=1):
                 for operator in operators:
                     checked_operator.append(int(operator))
                 results = results & Tour.objects.filter(operator__in=checked_operator)
+        #tri des resultats
+        # par defaut price ASC
+        if not request.GET.get("sort"):
+            sort = "price"
+        else:
+            sort = request.GET["sort"]
+        results = results.order_by(sort)
     
-    #tri des resultats
-    # par defaut price ASC
-    if not request.GET.get("sort"):
-        sort = "price"
-    else:
-        sort = request.GET["sort"]
-    results = results.order_by(sort)
 
     #nous aurons besion de recuperer les parametres 
     link=[]
@@ -267,10 +267,11 @@ def search(request,page=1):
         "selected":selected,"suivant":suivant,"precedent":precedent,
         "pages":range(1 , nb+1)
         }
-    return render(request,'search-results.html',context)        
+    return render(request,'tour_list.html',context)        
 
 def get_operator(request, id, page=1):
-    total = Operator.objects.get(id=id).tour_set.count()
+    results = Operator.objects.get(id=id).tour_set.all()
+    total = results.count()
     nb = total // 9 + 1
     if nb > 1:
         selected = page
@@ -298,8 +299,14 @@ def get_operator(request, id, page=1):
     d1 = datetime.now().date()
     d2 = Depart.objects.all().order_by("-to_date").first().to_date
     checked_operator = str(id)
-    context = {
-        "Tours":Operator.objects.get(id=id).tour_set.all()[9 * (page - 1):9 * page],
+    if not request.GET.get("sort"):
+        sort = "price"
+        sort_template= ""
+    else:
+        sort_template = sort = request.GET["sort"]
+    results = results.order_by(sort)
+    context={
+        'Tours':results[9 * (page - 1):9 * page],
         "operators": Operator.objects.all(),
         "checked_operator":[id],
         "checked_operator_value":checked_operator,
@@ -324,11 +331,13 @@ def get_operator(request, id, page=1):
         "max_price_value":max_price_value,
         "min_duration_value":min_duration_value,
         "max_duration_value":max_duration_value,
+        "sort_template":sort_template
         }
-    return render(request,'tour_list_op.html',context)
+    return render(request,'tour_list.html',context)
 
 def get_categorie(request, id,page=1):
-    total = categorie.objects.get(id=id).tour_set.count()
+    results = categorie.objects.get(id=id).tour_set.all()
+    total = results.count()
     nb = total // 9 + 1
     if nb > 1:
         selected = page
@@ -356,8 +365,14 @@ def get_categorie(request, id,page=1):
     max_duration_value = categorie.objects.get(id=id).tour_set.all().order_by("duree").last().duree
     d1 = datetime.now().date()
     d2 = Depart.objects.all().order_by("-to_date").first().to_date
+    if not request.GET.get("sort"):
+        sort = "price"
+        sort_template=''
+    else:
+        sort_template = sort = request.GET["sort"]
+    results = results.order_by(sort)
     context={
-        'Tours':categorie.objects.get(id=id).tour_set.all()[9 * (page - 1):9 * page],
+        'Tours':results[9 * (page - 1):9 * page],
         "operators": Operator.objects.all(),
         "cities":City.objects.all(),
         'categorie':categorie.objects.get(id=id),
@@ -380,6 +395,7 @@ def get_categorie(request, id,page=1):
         "max_price_value":max_price_value,
         "min_duration_value":min_duration_value,
         "max_duration_value":max_duration_value,
+        "sort_template":sort_template
     }
     return render(request,'tour_list.html',context)
 
@@ -403,8 +419,8 @@ def update(request):
         print("ends in : ",datetime.now(), file=f,flush=True)
         driver.quit()
         T = Tour.objects.annotate(departs_count=Count("depart"))
-        T = Tour.objects.annotate(images_count=Count("image"))
         T.filter(departs_count=0).delete()
+        T = Tour.objects.annotate(images_count=Count("image"))
         T.filter(images_count=0).delete()
         newsletter_send(request)
     context = {"scraping" : True}
@@ -1030,8 +1046,7 @@ def cosmos_internatioanl(request,driver=None):
     print("ends in : ",datetime.now(), file=f,flush=True)
     f.close()
 
-def scraping(request, scraping=False):
-    
+def scraping(request, scraping=False):   
     if request.user.is_superuser:
         context = {
             "operators":Operator.objects.all(),

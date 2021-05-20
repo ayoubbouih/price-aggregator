@@ -423,7 +423,6 @@ $(function() {
 			$(this).find('.drop-list').addClass('act');
 			$(this).find('span').slideDown(300);
 		}
-		return false;
 	});
     $('.drop span a').on( "click", function() {
 			$(this).parent().parent().find('b').text($(this).text());
