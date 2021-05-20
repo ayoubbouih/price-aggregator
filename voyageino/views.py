@@ -109,15 +109,9 @@ def login_process(request):
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-<<<<<<< HEAD
         return redirect('home_page')
     else:
         return redirect('login_page')
-=======
-        return redirect('home_page',kwargs={"logged_in":True})
-    else:
-        return redirect('login_page',kwargs={"error":True})
->>>>>>> 6e47f1cf6e6c4c3cbda46bff25ae4ec324214fb5
 
 def register(request,error=False):
     if request.user.is_authenticated:
