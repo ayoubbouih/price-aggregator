@@ -20,6 +20,9 @@ urlpatterns = [
     path("login", views.login),
     path("login_process", views.login_process),
     path("logout", views.logout_process),
+    path("register", views.register),
+    path("register_process", views.register_process),
+
 
     path("scraping",views.scraping),
     path("intrepidtravel",views.intrepidtravel),

@@ -112,17 +112,18 @@ def operator_page(request):
     context = {"operator":op,}
     return render(request,"tour_operator.html",context)
 
-def login(request,error=False):
+def login(request,error=False,registration=False):
     if request.user.is_authenticated:
         return home_page(request)
     else:
         context={
             "error":error,
+            "registration":registration
         }
         return render(request,"login.html",context)
 
 def login_process(request):
-    username = request.POST["email"]
+    username = request.POST["username"]
     password = request.POST["password"]
     user = authenticate(request, username=username, password=password)
     if user is not None:
@@ -130,6 +131,26 @@ def login_process(request):
         return home_page(request,logged_in=True)
     else:
         return login(request,error=True)
+
+def register(request,error=False):
+    if request.user.is_authenticated:
+        return home_page(request)
+    else:
+        context={
+            "error":error,
+        }
+        return render(request,"register.html",context)
+
+def register_process(request):
+    username = request.POST["username"]
+    email = request.POST["email"]
+    password = request.POST["password"]
+    if User.objects.filter(username=username).exists():
+        return register(request,error=True)
+    else:
+        user = User.objects.create_user(username,email,password)
+        user.save()
+        return login(request,registration=True)
 
 def logout_process(request):
     logout(request)
