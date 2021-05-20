@@ -109,5 +109,5 @@ class Subscriber(models.Model):
     email = models.EmailField()
 
 class Favourite(models.Model):
-    user = models.ForeignKey("user",on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     tour = models.ForeignKey('tour',on_delete=models.CASCADE)
