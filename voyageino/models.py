@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.core.validators import MinValueValidator,MaxValueValidator
+from django.core.validators import MinValueValidator
 from django.db.models import Count
 from datetime import datetime
 from django.contrib.auth.models import User
@@ -14,6 +14,7 @@ class Tour(models.Model):
     categorie = models.ForeignKey('categorie',on_delete=models.CASCADE)
     operator = models.ForeignKey('Operator',on_delete=models.CASCADE)
     cities = models.ManyToManyField("City",blank=False)
+    favourite=models.ManyToManyField(User,blank=False)
 
     def publish(self):
         self.save()
@@ -107,7 +108,3 @@ class Operator(models.Model):
        
 class Subscriber(models.Model):
     email = models.EmailField()
-
-class Favourite(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
-    tour = models.ForeignKey('tour',on_delete=models.CASCADE)
