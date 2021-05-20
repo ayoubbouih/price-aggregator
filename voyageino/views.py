@@ -1,12 +1,12 @@
 import requests
-from django.shortcuts import render 
+from django.shortcuts import render,redirect
 from threading import *
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import re
 from datetime import datetime
-from .models import Tour,City,categorie,Image,Depart,Operator,Subscriber,Favourite
+from .models import Tour,City,categorie,Image,Depart,Operator,Subscriber
 from aggregator.settings import EMAIL_HOST_USER
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
@@ -45,21 +45,24 @@ def operators_page(request):
     return render(request,"tour_operator.html",context)
 
 def in_favourites(request , id):
+    pass
     #user = User(request.user)
-    return Tour.objects.get(id=id) in request.user.favourites()
+    # return Tour.objects.get(id=id) in request.user.favourites()
 
 def remove_favourites(request, id):
-    if in_favourites(request , id):
-        Favourite.objects.get(user=request.user.id,tour=id).delete()
-        return tour_page(request,id,False, False,True)
-    return tour_page(request,id,False, False,False)
+    pass
+    # if in_favourites(request , id):
+    #     Favourite.objects.get(user=request.user.id,tour=id).delete()
+    #     return tour_page(request,id,False, False,True)
+    # return tour_page(request,id,False, False,False)
 
 def add_favourites(request, id):
-    if not in_favourites(request , id):
-        f = Favourite (None, request.user.id, id)
-        f.save()
-        return tour_page(request,id,True, True,False)
-    return tour_page(request,id,True, False,False)
+    pass
+    # if not in_favourites(request , id):
+    #     f = Favourite (None, request.user.id, id)
+    #     f.save()
+    #     return tour_page(request,id,True, True,False)
+    # return tour_page(request,id,True, False,False)
 
 def home_page(request,subscription=False,email=None,logged_in=False,logged_out=False):
     cat = categorie.objects.all()
@@ -106,9 +109,9 @@ def login_process(request):
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        return home_page(request,logged_in=True)
+        return redirect('home_page',kwargs={"logged_in":True})
     else:
-        return login_page(request,error=True)
+        return redirect('login_page',kwargs={"error":True})
 
 def register(request,error=False):
     if request.user.is_authenticated:
