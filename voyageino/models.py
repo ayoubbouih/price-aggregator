@@ -111,10 +111,3 @@ class Subscriber(models.Model):
 class Favourite(models.Model):
     user = models.ForeignKey("user",on_delete=models.CASCADE)
     tour = models.ForeignKey('tour',on_delete=models.CASCADE)
-
-
-class user(User):
-    
-    def favourites(self):
-        tours = [Tour.objects.get(id=favorite.tour) for favorite in self.favourite_set.all()]
-        return tours

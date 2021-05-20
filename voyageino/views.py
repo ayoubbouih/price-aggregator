@@ -6,13 +6,14 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import re
 from datetime import datetime
-from .models import Tour,City,categorie,Image,Depart,Operator,Subscriber,Favourite,User
+from .models import Tour,City,categorie,Image,Depart,Operator,Subscriber,Favourite
 from aggregator.settings import EMAIL_HOST_USER
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.db.models import Count
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 
 
 def subscribe(request):
