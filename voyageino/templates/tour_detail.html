@@ -164,9 +164,9 @@
 							<p class="color-grey-9">Duration: <span class="color-white">{{tour.duree}} Days</span></p>
 						</div>
 						<div class="details-btn">
-							{%if favourite%}
+							{%if favourite and request.user.is_authenticated %}
 							<a href="/remove_favourites/{{tour.id}}" class="c-button b-40 bg-tr-1 hv-white"><span>remove from favourites</span></a>
-							{%else%}
+							{%elif request.user.is_authenticated%}
 							<a href="/add_favourites/{{tour.id}}" class="c-button b-40 bg-tr-1 hv-white"><span>add to favourites</span></a>
 							{%endif%}
 							<a href="{{tour.url}}" class="c-button b-40 bg-white hv-transparent" target="_blank"><span>book now</span></a>

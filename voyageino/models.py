@@ -14,7 +14,6 @@ class Tour(models.Model):
     categorie = models.ForeignKey('categorie',on_delete=models.CASCADE)
     operator = models.ForeignKey('Operator',on_delete=models.CASCADE)
     cities = models.ManyToManyField("City",blank=False)
-    favourite=models.ManyToManyField(User,blank=False)
 
     def publish(self):
         self.save()
@@ -108,3 +107,7 @@ class Operator(models.Model):
        
 class Subscriber(models.Model):
     email = models.EmailField()
+
+class favourite(models.Model):
+    tour =  models.ForeignKey('tour',on_delete=models.CASCADE)
+    user =  models.ForeignKey(User,on_delete=models.CASCADE)
