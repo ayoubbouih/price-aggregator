@@ -45,8 +45,8 @@ def operators_page(request):
     return render(request,"tour_operator.html",context)
 
 def in_favourites(request , id):
-    user = User(request.user)
-    return Tour.objects.get(id=id) in user.favourites()  
+    #user = User(request.user)
+    return Tour.objects.get(id=id) in request.user.favourites()
 
 def remove_favourites(request, id):
     if in_favourites(request , id):
@@ -90,7 +90,7 @@ def tour_page(request, id, favourite=None,added=False, removed=False):
     return render(request,"tour_detail.html",context)
 
 
-def login(request,error=False,registration=False):
+def login_page(request,error=False,registration=False):
     if request.user.is_authenticated:
         return home_page(request)
     else:
@@ -108,7 +108,7 @@ def login_process(request):
         login(request, user)
         return home_page(request,logged_in=True)
     else:
-        return login(request,error=True)
+        return login_page(request,error=True)
 
 def register(request,error=False):
     if request.user.is_authenticated:
