@@ -4076,7 +4076,7 @@ ul.dot-blue-2 li:before { color: #022c54; }
 
 .checkbox-group { margin-bottom: 40px; }
 
-.login-logo { position: absolute; top: 0px; right: 0px; bottom: 0px; left: 58.33333333%; }
+.login-logo { position: absolute; top: 0px; right: 0px; bottom: 0px; left: 58.33333333%; border-left: 1px solid grey}
 
 .full-copy { position: absolute; bottom: 50px; left: 50%; -webkit-transform: translateX(-50%); -moz-transform: translateX(-50%); -ms-transform: translateX(-50%); -o-transform: translateX(-50%); transform: translateX(-50%); color: #fff; font-size: 13px; letter-spacing: 1px; }
 
@@ -5401,7 +5401,7 @@ header.color-2 nav.bg-green  > ul > li > a:hover {color: #999;}
 
 .alert {color: #fff; font-size: 14px; position: relative; width: 100%; margin-bottom: 30px;}
 .alert .fa {font-size: 24px; line-height: 20px; cursor: pointer; position: absolute; top: 50%; transform: translateY(-50%); right: 20px; }
-.alert span {padding-right: 60px; display: block;}
+.alert span {padding-right: 30px; display: block;}
 .alert.act {display: none;}
 .buttons-wrap .sidebar-block {padding: 15px; border: 1px solid #eee; border-radius: 5px; background: #fff;}
 .buttons-wrap .drop-wrap.color-4 {margin-bottom: 20px;}

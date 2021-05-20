@@ -102,7 +102,7 @@ class Operator(models.Model):
 
     def __str__(self):
         return self.name
-
-        
+       
 class Subscriber(models.Model):
     email = models.EmailField()
+
