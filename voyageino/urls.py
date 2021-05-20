@@ -12,7 +12,7 @@ urlpatterns = [
     path("search", views.search),
     path("operator/<int:id>", views.get_operator),
     path("operator/<int:id>/<int:page>", views.get_operator),
-    path("operator", views.operator_page),
+    path("operators", views.operators_page),
     path("add_favourites/<int:id>", views.add_favourites),
     path("remove_favourites/<int:id>", views.remove_favourites),
     path("subscribe", views.subscribe),

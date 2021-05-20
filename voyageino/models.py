@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator,MaxValueValidator
 from django.db.models import Count
 from datetime import datetime
+from django.contrib.auth.models import User
 # Create your models here.
 class Tour(models.Model):
     url = models.TextField()
@@ -35,6 +36,7 @@ class Tour(models.Model):
             return None
     def other_images(self):
         return self.image_set.all()[1:]
+        
 
 class City(models.Model):
     name = models.TextField()
@@ -106,3 +108,13 @@ class Operator(models.Model):
 class Subscriber(models.Model):
     email = models.EmailField()
 
+class Favourite(models.Model):
+    user = models.ForeignKey("user",on_delete=models.CASCADE)
+    tour = models.ForeignKey('tour',on_delete=models.CASCADE)
+
+
+class user(User):
+    
+    def favourites(self):
+        tours = [Tour.objects.get(id=favorite.tour) for favorite in self.favourite_set.all()]
+        return tours

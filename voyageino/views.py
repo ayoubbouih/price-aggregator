@@ -6,13 +6,12 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import re
 from datetime import datetime
-from .models import Tour,City,categorie,Image,Depart,Operator,Subscriber
+from .models import Tour,City,categorie,Image,Depart,Operator,Subscriber,Favourite,User
 from aggregator.settings import EMAIL_HOST_USER
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.db.models import Count
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
 
@@ -39,45 +38,27 @@ def newsletter_send(request):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
-def in_favourites(request , id):
-    if "fav" in request.COOKIES:
-        if str(id) in request.COOKIES["fav"].split(","):
-            return True
-        return False
-    return False   
+def operators_page(request):
+    op = Operator.objects.all()
+    context = {"operator":op,}
+    return render(request,"tour_operator.html",context)
 
+def in_favourites(request , id):
+    user = User(request.user)
+    return Tour.objects.get(id=id) in user.favourites()  
 
 def remove_favourites(request, id):
-    if "fav" in request.COOKIES:
-        if in_favourites(request,id):
-            fav = request.COOKIES["fav"].split(",")
-            fav.remove(str(id))
-            fav = ",".join(fav)
-            removed = True
-        else:
-            fav = request.COOKIES["fav"]
-            removed=False
-    else:
-        fav = request.COOKIES["fav"]
-        removed = False
-    response = tour_page(request,id,False, False,removed)
-    response.set_cookie("fav",fav)
-    return response
+    if in_favourites(request , id):
+        Favourite.objects.get(user=request.user.id,tour=id).delete()
+        return tour_page(request,id,False, False,True)
+    return tour_page(request,id,False, False,False)
 
 def add_favourites(request, id):
-    if "fav" in request.COOKIES:
-        if in_favourites(request,id) == False:
-            fav = request.COOKIES["fav"]+","+str(id)
-            added = True
-        else:
-            fav = request.COOKIES["fav"]
-            added = False
-    else:
-        fav = id
-        added= False
-    response = tour_page(request,id,True, True,False)
-    response.set_cookie("fav",fav)
-    return response
+    if not in_favourites(request , id):
+        f = Favourite (None, request.user.id, id)
+        f.save()
+        return tour_page(request,id,True, True,False)
+    return tour_page(request,id,True, False,False)
 
 def home_page(request,subscription=False,email=None,logged_in=False,logged_out=False):
     cat = categorie.objects.all()
@@ -107,10 +88,6 @@ def tour_page(request, id, favourite=None,added=False, removed=False):
     context = {"tour":Tour.objects.get(id=id),"favourite":favourite,"added":added, "removed":removed}
     return render(request,"tour_detail.html",context)
 
-def operator_page(request):
-    op = Operator.objects.all()
-    context = {"operator":op,}
-    return render(request,"tour_operator.html",context)
 
 def login(request,error=False):
     if request.user.is_authenticated:
@@ -463,11 +440,7 @@ def travlertalks_national(request,driver=None):
             soup = BeautifulSoup(response.content,"html.parser")
             details = str(soup.find("div",attrs={"id":"itinerary"}))
             # création du voyage
-            if Tour.objects.count() == 0:
-                id = 1
-            else:
-                id = Tour.objects.latest('id').id + 1
-            t = Tour(id,url,title,price,str(details),duree,categorie,operator)
+            t = Tour(None,url,title,price,str(details),duree,categorie,operator)
             t.save()
             #l'ajout des villes au voyage
             cities_list = soup.find_all("div",attrs={"class":"wp-block-columns sight-header-button"}) 
@@ -477,22 +450,16 @@ def travlertalks_national(request,driver=None):
                 if City.objects.filter(name=city_name).count() > 0:
                     t.cities.add(City.objects.filter(name=city_name).first())
                 else:
-                    id = City.objects.count() + 1
-                    c = City(id,city_name)
+                    c = City(None,city_name)
                     c.save()
                     t.cities.add(c)
             #l'ajout des images
             images_boxes = soup.find_all("li",attrs={"class":"blocks-gallery-item"})
-            if Image.objects.count() == 0:
-                id = 1
-            else:
-                id = Image.objects.latest('id').id + 1
-            i = Image(id,t.id,first_image)
+            i = Image(None,t.id,first_image)
             i.save()  
             for image in images_boxes:
                 url = image.img.get("src")
-                id = Image.objects.latest('id').id + 1
-                i = Image(id,t.id,url)
+                i = Image(None,t.id,url)
                 i.save()
             #l'ajout des departs
             departs_box = soup.find("div",attrs={"class":"wp-block-group alignwide date-rates-table hidden-mobile"})
@@ -502,11 +469,7 @@ def travlertalks_national(request,driver=None):
                 from_date = datetime.strptime(infos[0].text.strip(),"%a %d %b %Y").date()
                 to_date = datetime.strptime(infos[1].text.strip(),"%a %d %b %Y").date()
                 price = infos[5].text.strip().split("€")[-1]
-                if Depart.objects.count() == 0:
-                    id = 1
-                else:
-                    id = Depart.objects.latest('id').id + 1
-                d = Depart(id,t.id,from_date,to_date,price)
+                d = Depart(None,t.id,from_date,to_date,price)
                 d.save()
         except Exception as e:
             print(e, file=f)
@@ -556,11 +519,7 @@ def globus_international(request,driver=None):
                 duree = int(soup.find("p",attrs={"id":"product-description"}).text.strip().split()[0])
                 details = soup.find("div",attrs={"id":"itinerary"})
                 # création du voyage
-                if Tour.objects.count() == 0:
-                    id = 1
-                else:
-                    id = Tour.objects.latest('id').id + 1
-                t = Tour(id,lien,title,price,str(details),duree,categorie,operator)
+                t = Tour(None,lien,title,price,str(details),duree,categorie,operator)
                 t.save()
                     # l'ajout des villes au voyage
                 for city in cities_divs:
@@ -568,8 +527,7 @@ def globus_international(request,driver=None):
                     if City.objects.filter(name=city).count() > 0:
                         t.cities.add(City.objects.filter(name=city).first())
                     else:
-                        id = City.objects.count() + 1
-                        c = City(id,city)
+                        c = City(None,city)
                         c.save()
                         t.cities.add(c)
                     # l'ajout des départs au voyage
@@ -582,11 +540,8 @@ def globus_international(request,driver=None):
                     from_date = datetime.strptime(dates[0].text.strip(),"%d %b %y")
                     to_date = datetime.strptime(dates[1].text.strip(),"%d %b %y")
                     price = int("".join(depart.find("p",attrs={"class":"price-actual"}).text.split("$")[1].split(",")))
-                    if Depart.objects.count() == 0:
-                        id = 1
-                    else:
-                        id = Depart.objects.latest('id').id + 1
-                    d = Depart(id,t.id,from_date,to_date,price)
+                    
+                    d = Depart(None,t.id,from_date,to_date,price)
                     d.save()
                 # l'ajout des images
                 if Image.objects.count() == 0:
@@ -657,11 +612,7 @@ def intrepidtravel_international(request,driver=None):
                 for city in cities_group:
                     cities.extend(re.split("/|-",city.a.text.strip().split(": ")[1].strip()))
                 #creating tour
-                if Tour.objects.count() == 0:
-                    id = 1
-                else:
-                    id = Tour.objects.latest('id').id + 1
-                t = Tour(id,url,title,price,str(details),duree,categorie,operator)
+                t = Tour(None,url,title,price,str(details),duree,categorie,operator)
                 t.save()
                 # add cities to tour
                 for city in cities:
@@ -669,20 +620,14 @@ def intrepidtravel_international(request,driver=None):
                     if City.objects.filter(name=city).count() > 0:
                         t.cities.add(City.objects.filter(name=city).first())
                     else:
-                        id = City.objects.count() + 1
-                        c = City(id,city)
+                        c = City(None,city)
                         c.save()
                         t.cities.add(c)
                 #adding images to tour
-                if Image.objects.count() == 0:
-                    id = 1
-                else:
-                    id = Image.objects.latest('id').id + 1
-                i = Image(id,t.id,first_image)
+                i = Image(None,t.id,first_image)
                 i.save()
                 for image in images:
-                    id = Image.objects.latest('id').id + 1
-                    i = Image(id,t.id,image)
+                    i = Image(None,t.id,image)
                     i.save()
                 #adding depatures to tip
                 dates = soup.find_all("div",attrs={"class":"departure-info"})
@@ -690,11 +635,7 @@ def intrepidtravel_international(request,driver=None):
                     from_date = datetime.strptime(date.div.find_all("div",attrs={"class":"col-sm-3"})[0].text.strip(),"%a %d %b %Y")
                     to_date = datetime.strptime(date.div.find_all("div",attrs={"class":"col-sm-3"})[1].text.strip(),"%a %d %b %Y")
                     price = int("".join(date.find("span",attrs={"class":"price-formatter"}).text.split("$")[1].split(",")))
-                    if Depart.objects.count() == 0:
-                        id = 1
-                    else:
-                        id = Depart.objects.latest('id').id + 1
-                    d = Depart(id,t.id,from_date,to_date,price)
+                    d = Depart(None,t.id,from_date,to_date,price)
                     d.save()
             except Exception as e:
                 print(e, file=f)
@@ -744,11 +685,7 @@ def intrepidtravel_national(request,driver=None):
             for city in cities_group:
                 cities.extend(re.split("/|-",city.a.text.strip().split(": ")[1].strip()))
             #creating tour
-            if Tour.objects.count() == 0:
-                id = 1
-            else:
-                id = Tour.objects.latest('id').id + 1
-            t = Tour(id,url,title,price,str(details),duree,categorie,operator)
+            t = Tour(None,url,title,price,str(details),duree,categorie,operator)
             t.save()
             # add cities to tour
             for city in cities:
@@ -756,20 +693,14 @@ def intrepidtravel_national(request,driver=None):
                 if City.objects.filter(name=city).count() > 0:
                     t.cities.add(City.objects.filter(name=city).first())
                 else:
-                    id = City.objects.count() + 1
-                    c = City(id,city)
+                    c = City(None,city)
                     c.save()
                     t.cities.add(c)
             #adding images to tour
-            if Image.objects.count() == 0:
-                id = 1
-            else:
-                id = Image.objects.latest('id').id + 1
-            i = Image(id,t.id,first_image)
+            i = Image(None,t.id,first_image)
             i.save()
             for image in images:
-                id = Image.objects.latest('id').id + 1
-                i = Image(id,t.id,image)
+                i = Image(None,t.id,image)
                 i.save()
             #adding depatures to tip
             dates = soup.find_all("div",attrs={"class":"departure-info"})
@@ -777,11 +708,7 @@ def intrepidtravel_national(request,driver=None):
                 from_date = datetime.strptime(date.div.find_all("div",attrs={"class":"col-sm-3"})[0].text.strip(),"%a %d %b %Y")
                 to_date = datetime.strptime(date.div.find_all("div",attrs={"class":"col-sm-3"})[1].text.strip(),"%a %d %b %Y")
                 price = int("".join(date.find("span",attrs={"class":"price-formatter"}).text.split("$")[1].split(",")))
-                if Depart.objects.count() == 0:
-                    id = 1
-                else:
-                    id = Depart.objects.latest('id').id + 1
-                d = Depart(id,t.id,from_date,to_date,price)
+                d = Depart(None,t.id,from_date,to_date,price)
                 d.save()
         except Exception as e:
             print(e, file=f)
@@ -827,19 +754,10 @@ def tourradar_noce(request):
                 soup = BeautifulSoup(response.content,"html.parser") 
                 details = str(soup.find("div",attrs={"class":"ao-tour-block","data-block-type":"Itinerary"}))
                 #création du voyage
-
-                if Tour.objects.count() == 0:
-                    id = 1
-                else:
-                    id = Tour.objects.latest('id').id + 1
-                t = Tour(id,url,title,price,str(details),duree,categorie, operator)
+                t = Tour(None,url,title,price,str(details),duree,categorie, operator)
                 t.save()
 
                 #l'ajout des villes 
-                if City.objects.count() == 0:
-                    id = 1
-                else:
-                    id = City.objects.latest('id').id + 1
                 cities = soup.find("div",{"class":"ao-tour-places-you-will-see__carousel"}).find_all("li") 
                 for city in cities:
                     city = city.text.strip()
@@ -847,18 +765,16 @@ def tourradar_noce(request):
                         t.cities.add(City.objects.filter(name=city).first())
                     else:
                         id = City.objects.count() + 1
-                        c = City(id,city.strip())
+                        c = City(None,city.strip())
                         c.save()
                         t.cities.add(c)
                 #l'ajout des images
                 first_image = soup.find("div",{"class":"ao-tour-hero-image"}).img.get("src")
-                id = Image.objects.latest('id').id + 1
-                i = Image(id,t.id,first_image)
+                i = Image(None.id,first_image)
                 i.save()
                 images_box = soup.find_all("img",attrs={"class":"ao-tour-places-you-will-see__image js-ao-tour-places-you-will-see__image"})
                 for image in images_box:
-                    id = Image.objects.latest('id').id + 1
-                    i = Image(id,t.id,image.get("data-src"))
+                    i = Image(None,t.id,image.get("data-src"))
                     i.save()
 
                 #l'ajout des departs
@@ -867,8 +783,7 @@ def tourradar_noce(request):
                     from_date = datetime.strptime(depart.find("div",attrs={"class":"am-tour-availability__variant-bold-text"}).text.strip(),"%d %b, %Y")
                     to_date = datetime.strptime(depart.find("div",attrs={"class":"am-tour-availability__variant-bold-text--text-align-right"}).text.strip(),"%d %b, %Y")
                     price = int("".join(depart.find("div",attrs={"class":"am-tour-availability__variant-price-container"}).div.text.strip()[1:].split(",")))
-                    id = Depart.objects.latest('id').id + 1
-                    d = Depart(id, t.id, from_date, to_date, price)
+                    d = Depart(None, t.id, from_date, to_date, price)
                     d.save()
             except Exception as e:
                 print(e, file=f)
@@ -903,19 +818,10 @@ def tourradar_national(request):
             soup = BeautifulSoup(response.content,"html.parser") 
             details = str(soup.find("div",attrs={"class":"ao-tour-block","data-block-type":"Itinerary"}))
             #création du voyage
-
-            if Tour.objects.count() == 0:
-                id = 1
-            else:
-                id = Tour.objects.latest('id').id + 1
-            t = Tour(id,url,title,price,str(details),duree,categorie, operator)
+            t = Tour(None,url,title,price,str(details),duree,categorie, operator)
             t.save()
 
             #l'ajout des villes 
-            if City.objects.count() == 0:
-                id = 1
-            else:
-                id = City.objects.latest('id').id + 1
             cities = soup.find("div",{"class":"ao-tour-places-you-will-see__carousel"}).find_all("li") 
             for city in cities:
                 city = city.text.strip()
@@ -923,18 +829,16 @@ def tourradar_national(request):
                     t.cities.add(City.objects.filter(name=city).first())
                 else:
                     id = City.objects.count() + 1
-                    c = City(id,city.strip())
+                    c = City(None,city.strip())
                     c.save()
                     t.cities.add(c)
             #l'ajout des images
             first_image = soup.find("div",{"class":"ao-tour-hero-image"}).img.get("src")
-            id = Image.objects.latest('id').id + 1
-            i = Image(id,t.id,first_image)
+            i = Image(None,t.id,first_image)
             i.save()
             images_box = soup.find_all("img",attrs={"class":"ao-tour-places-you-will-see__image js-ao-tour-places-you-will-see__image"})
             for image in images_box:
-                id = Image.objects.latest('id').id + 1
-                i = Image(id,t.id,image.get("data-src"))
+                i = Image(None,t.id,image.get("data-src"))
                 i.save()
 
             #l'ajout des departs
@@ -943,8 +847,7 @@ def tourradar_national(request):
                 from_date = datetime.strptime(depart.find("div",attrs={"class":"am-tour-availability__variant-bold-text"}).text.strip(),"%d %b, %Y")
                 to_date = datetime.strptime(depart.find("div",attrs={"class":"am-tour-availability__variant-bold-text--text-align-right"}).text.strip(),"%d %b, %Y")
                 price = int("".join(depart.find("div",attrs={"class":"am-tour-availability__variant-price-container"}).div.text.strip()[1:].split(",")))
-                id = Depart.objects.latest('id').id + 1
-                d = Depart(id, t.id, from_date, to_date, price)
+                d = Depart(None, t.id, from_date, to_date, price)
                 d.save()
         except Exception as e:
             print(e, file=f)
@@ -953,11 +856,11 @@ def tourradar_national(request):
     f.close()
 
 def cosmos(request,driver=None):
-    cosmos_internatioanl(request,driver)
+    cosmos_international(request,driver)
     newsletter_send(request)
     return scraping(request, True)
 
-def cosmos_internatioanl(request,driver=None):
+def cosmos_international(request,driver=None):
     f = open("scraping.log","a+")
     print("Cosmos", file=f, flush=True)
     print("starts in : ",datetime.now(), file=f, flush=True)
@@ -994,11 +897,7 @@ def cosmos_internatioanl(request,driver=None):
                 duree = int(soup.find("p",attrs={"id":"product-description"}).text.strip().split()[0])
                 details = soup.find("div",attrs={"id":"itinerary"})
                 # création du voyage
-                if Tour.objects.count() == 0:
-                    id = 1
-                else:
-                    id = Tour.objects.latest('id').id + 1
-                t = Tour(id,lien,title,price,str(details),duree,categorie,operator)
+                t = Tour(None,lien,title,price,str(details),duree,categorie,operator)
                 t.save()
                     # l'ajout des villes au voyage
                 for city in cities_divs:
@@ -1006,8 +905,7 @@ def cosmos_internatioanl(request,driver=None):
                     if City.objects.filter(name=city).count() > 0:
                         t.cities.add(City.objects.filter(name=city).first())
                     else:
-                        id = City.objects.count() + 1
-                        c = City(id,city)
+                        c = City(None,city)
                         c.save()
                         t.cities.add(c)
                     # l'ajout des départs au voyage
@@ -1021,23 +919,14 @@ def cosmos_internatioanl(request,driver=None):
                     from_date = datetime.strptime(dates[0].text.strip(),"%d %b %y")
                     to_date = datetime.strptime(dates[1].text.strip(),"%d %b %y")
                     price = int("".join(depart.find("p",attrs={"class":"price-actual"}).text.split("$")[1].split(",")))
-                    if Depart.objects.count() == 0:
-                        id = 1
-                    else:
-                        id = Depart.objects.latest('id').id + 1
-                    d = Depart(id,t.id,from_date,to_date,price)
+                    d = Depart(None,t.id,from_date,to_date,price)
                     d.save()
                 # l'ajout des images
-                if Image.objects.count() == 0:
-                    id = 1
-                else:
-                    id = Image.objects.latest('id').id + 1
-                i = Image(id,t.id,first_image)
+                i = Image(None,t.id,first_image)
                 i.save()
                 for image in images:
                     image = image.img.get("src")
-                    id = Image.objects.latest('id').id + 1
-                    i = Image(id,t.id,image)
+                    i = Image(None,t.id,image)
                     i.save()
             except Exception as e:
                 print(e, file=f, flush=True)
