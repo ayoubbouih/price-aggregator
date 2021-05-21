@@ -4060,7 +4060,7 @@ ul.dot-blue-2 li:before { color: #022c54; }
 /*-------------------------------------------------------------------------------------------------------------------------------*/
 .login-fullpage { position: relative; margin-top: 116px; margin-bottom: 116px; background: #fff; }
 
-.f-login-content { padding: 78px 100px 78px 100px; }
+.f-login-content { padding: 78px 80px; }
 
 .f-login-header { margin-bottom: 69px; }
 
@@ -7510,4 +7510,17 @@ img.operator-image {
 
 .login-box {
   background: white;
+}
+
+.profile-data {
+  margin-bottom: 20px;
+}
+
+.profile-data tr{
+  margin-bottom: 50px;
+}
+
+.profile-data p, .profile-data a {
+  color: #bebebe;
+  font-size: 20px !important;
 }

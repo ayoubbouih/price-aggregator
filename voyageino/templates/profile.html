@@ -1,23 +1,43 @@
 {% extends "template.html" %}
 {% block inner_page %}
+
+{% if password_change_confirmation %}
+<div class="bootoast-container bottom center">
+	<div class="bootoast alert alert-success alert-dismissible" style="opacity: 1;">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">×</span>
+		</button>
+		<span class="bootoast-alert-container">
+			<span class="bootoast-alert-content">You have changed your password successfully</span>
+		</span>
+	</div>
+</div>
+{% endif %}
+
 <img class="center-image" src="static/img/home_10/hero.jpg" alt="">
 <div class="container">
 	<div class="login-fullpage">                                                                       
-		<div class="row">
-			<div class="col-xs-12 col-sm-7">
+		<div class="login">
+			<div class="col-xs-12 col-sm-8 login-box">
 				<div class="f-login-content">
 					<div class="f-login-header">
 						<div class="f-login-title color-dr-blue-2">Profile</div>
 					</div>
-					<form class="f-login-form" action="login_process" method="POST">
-						{% csrf_token %}
-						<div class="input-style-1 b-50 type-2 color-5 profile-data">
-                            <p>username: {{request.user.username}}</p>
-						</div>
-						<div class="input-style-1 b-50 type-2 color-5 profile-data">
-                            <p>email: {{request.user.email}}</p>
-						</div>
-					</form>
+					<div class="profile-data-block">
+						<table class="profile-data">
+							<tr height="50px">
+								<td><p>username:</p></td>
+								<td><p>{{request.user.username}}</p></td>
+							</tr>
+							<tr height="50px">
+								<td><p>email:</p></td>
+								<td><p>{{request.user.email}}</p></td>
+							</tr>
+							<tr height="50px">
+								<td><a href="/password_change">change your password</a></td>
+							</tr>
+						</table>
+					</div>
 				</div>				
 			</div>
 		</div>

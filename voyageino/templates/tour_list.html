@@ -23,8 +23,13 @@
 <div class="list-wrapper bg-grey-2">
     <div class="container">
         <div class="row">
+            {%if title != "my favourites" %}
             {%include 'search-sidebar.html'%}
           <div class="col-xs-12 col-sm-8 col-md-9">
+              {%else%}
+              <div class="col-xs-12">
+
+              {%endif%}
             <div class="list-header clearfix">
                 {%if categorie%}
                 <div class="drop-wrap drop-wrap-s-4 color-4 list-sort">
@@ -68,7 +73,7 @@
                           </span>
                      </div>
                   </div>
-                {%else%}
+                {%elif search%}
                 <div class="drop-wrap drop-wrap-s-4 color-4 list-sort">
                     <div class="drop">
                        <b>Sort by price</b>
@@ -207,7 +212,7 @@
                             {%endif%}
                     {%endfor%}
                     </ul>
-                {%else%}
+                {%elif search%}
 
                     {%if precedent%}
                     <a href="/search?{{link}}&page={{precedent}}" class="c-button b-40 bg-dr-blue-2 hv-dr-blue-2-o fl">prev page</a>

@@ -13,6 +13,7 @@ urlpatterns = [
     path("operator/<int:id>", views.get_operator),
     path("operator/<int:id>/<int:page>", views.get_operator),
     path("operators", views.operators_page),
+    path("favourites/",views.get_favourites),
     path("add_favourites/<int:id>", views.add_favourites),
     path("remove_favourites/<int:id>", views.remove_favourites),
     path("subscribe", views.subscribe),
@@ -23,6 +24,8 @@ urlpatterns = [
     path("register", views.register),
     path("register_process", views.register_process),
     path("profile", views.profile),
+    path("password_change", views.password_change),
+    path("password_change_process", views.password_change_process),
 
 
     path("scraping",views.scraping),

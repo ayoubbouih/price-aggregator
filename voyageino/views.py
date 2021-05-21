@@ -138,8 +138,24 @@ def logout_process(request):
     logout(request)
     return home_page(request,logged_out=True)
 
-def profile(request):
-    return render(request, "profile.html")
+def profile(request, password_change_confirmation=False):
+    context = {
+        'password_change_confirmation':password_change_confirmation
+    }
+    return render(request, "profile.html", context)
+
+def password_change(request):
+    return render(request, "password_change.html")
+
+def password_change_process(request):
+    old_password = request.POST["old_password"]
+    new_password = request.POST["new_password"]
+    u = request.user
+    u.set_password(new_password)
+    u.save()
+    login(request, u)
+
+    return profile(request, password_change_confirmation=True)
 
 def page_not_found_view(request, exception=None):
     return render(request,"404.html")
@@ -281,7 +297,8 @@ def search(request,page=1):
         "selected":selected,"suivant":suivant,"precedent":precedent,
         "pages":sorted(pages),
         "nb":nb,
-        "next_limit":nb-1
+        "next_limit":nb-1,
+        "search":True
         }
     return render(request,'tour_list.html',context)        
 
@@ -438,6 +455,21 @@ def get_categorie(request, id,page=1):
         "next_limit":nb-1
     }
     return render(request,'tour_list.html',context)
+
+def get_favourites(request):
+    if request.user.is_authenticated:
+        favourites = favourite.objects.filter(user=request.user.id)
+        ids = [fav.tour.id for fav in favourites]
+        results = Tour.objects.filter(id__in=ids)
+        total = results.count()
+        results = results.order_by("price")
+        context={
+            'Tours':results,
+            "title":"my favourites",
+            "total":total,
+        }
+        return render(request,'tour_list.html',context)
+
 
 def update(request):
     if request.user.is_superuser:

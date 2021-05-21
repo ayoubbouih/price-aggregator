@@ -18,9 +18,9 @@
                             </li>
                             <li class="type-1"><a>Categories<span class="fa fa-angle-down"></span></a>
                                 <ul class="dropmenu">
-                                    <li><a href="/categorie/1">Voyages Nationals</a></li>
-                                    <li><a href="/categorie/2">Voyages Internationals</a></li>
-                                    <li><a href="/categorie/3">Voyages de Noces</a></li>
+                                    <li><a href="/categorie/1">Nationals Tours</a></li>
+                                    <li><a href="/categorie/2">Internationals Tours</a></li>
+                                    <li><a href="/categorie/3">Honeymoon Tours</a></li>
                                 </ul>
                             </li>
                             <li class="type-1">
@@ -29,7 +29,8 @@
                             {% if request.user.is_authenticated %}
                             <li class="type-1"><a>{{request.user.username}}<span class="fa fa-angle-down"></span></a>
                                 <ul class="dropmenu">
-                                    <li><a href="#">Profile</a></li>
+                                    <li><a href="/favourites">Favourites</a></li>
+                                    <li><a href="/profile">Profile</a></li>
                                     <li><a href="/logout">Logout</a></li>
                                 </ul>
                             </li>
