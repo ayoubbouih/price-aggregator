@@ -6,7 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import re
 from datetime import datetime
-from .models import Tour,City,categorie,Image,Depart,Operator,Subscriber
+from .models import Tour,City,categorie,Image,Depart,Operator,Subscriber,favourite
 from aggregator.settings import EMAIL_HOST_USER
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
@@ -45,24 +45,25 @@ def operators_page(request):
     return render(request,"tour_operator.html",context)
 
 def in_favourites(request , id):
-    pass
-    #user = User(request.user)
-    # return Tour.objects.get(id=id) in request.user.favourites()
+    if request.user.is_authenticated:
+        tour = Tour.objects.get(id=id)
+        return favourite.objects.filter(tour=id,user=request.user.id).exists()
+    return False
+
 
 def remove_favourites(request, id):
-    pass
-    # if in_favourites(request , id):
-    #     Favourite.objects.get(user=request.user.id,tour=id).delete()
-    #     return tour_page(request,id,False, False,True)
-    # return tour_page(request,id,False, False,False)
+    if in_favourites(request , id):
+        favourite.objects.filter(tour=id,user=request.user.id).delete()
+        return tour_page(request, id,False,False,True)
+    return tour_page(request, id,False,False,False)
+
 
 def add_favourites(request, id):
-    pass
-    # if not in_favourites(request , id):
-    #     f = Favourite (None, request.user.id, id)
-    #     f.save()
-    #     return tour_page(request,id,True, True,False)
-    # return tour_page(request,id,True, False,False)
+    if not in_favourites(request , id):
+        f = favourite(None, id, request.user.id)
+        f.save()
+        return tour_page(request, id,True,True,False)
+    return tour_page(request, id,True,False,False)
 
 def home_page(request,subscription=False,email=None,logged_in=False,logged_out=False):
     cat = categorie.objects.all()
@@ -588,7 +589,7 @@ def globus_international(request,driver=None):
     f.close()
 
 def intrepidtravel(request,driver=None):
-    intrepidtravel_international(request,driver)
+    # intrepidtravel_international(request,driver)
     intrepidtravel_national(request,driver)
     newsletter_send(request)
 
