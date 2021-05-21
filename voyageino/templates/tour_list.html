@@ -179,8 +179,8 @@
                             ...
                             {%endif%}
                             <li ><a href="/categorie/{{categorie.id}}/{{page}}{%if sort_template%}?sort={{sort_template}}{%endif%}">{{page}}</a></li>
-                            {%if page == suivant and suivant != nb%}
-                            ...
+                            {%if page == suivant and  suivant < next_limit  %}
+                                ...
                             {%endif%}
                         {%endif%}
                     {%endfor%}
@@ -197,8 +197,14 @@
                         {%if page == selected%}
                             <li class="active"><a href="/operator/{{operator.id}}/{{page}}{%if sort_template%}?sort={{sort_template}}{%endif%}">{{page}}</a></li>
                         {%else%}
+                            {%if page == precedent and precedent > 2%}
+                                ...
+                            {%endif%}
                             <li ><a href="/operator/{{operator.id}}/{{page}}{%if sort_template%}?sort={{sort_template}}{%endif%}">{{page}}</a></li>
-                        {%endif%}
+                            {%if page == suivant and  suivant < next_limit  %}
+                                ...
+                            {%endif%}
+                            {%endif%}
                     {%endfor%}
                     </ul>
                 {%else%}
@@ -214,7 +220,13 @@
                         {%if page == selected%}
                         <li class="active"><a href="/search?{{link}}&page={{page}}">{{page}}</a></li>
                         {%else%}
+                        {%if page == precedent and precedent > 2%}
+                            ...
+                        {%endif%}
                         <li ><a href="/search?{{link}}&page={{page}}">{{page}}</a></li>
+                        {%if page == suivant and  suivant < next_limit  %}
+                            ...
+                        {%endif%}
                         {%endif%}
                     {%endfor%}
 

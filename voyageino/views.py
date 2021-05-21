@@ -42,7 +42,7 @@ def newsletter_send(request):
 def operators_page(request):
     op = Operator.objects.all()
     context = {"operator":op,}
-    return render(request,"tour_operator.html",context)
+    return render(request,"operator_list.html",context)
 
 def in_favourites(request , id):
     if request.user.is_authenticated:
@@ -230,18 +230,26 @@ def search(request,page=1):
     max_duration = Tour.objects.all().order_by("duree").last().duree
     #pagination
     nb = total // 9 + 1
+    pages = []
     if nb > 1:
         selected = page
-
+        
+        pages.append(selected)
         if selected == 1:
             precedent = None
         else:
             precedent = selected - 1
+            pages.append(precedent)
+            if precedent != 1:
+                pages.append(1)
 
         if selected == nb:
             suivant = None
         else:
             suivant = selected + 1
+            pages.append(suivant)
+            if suivant != nb:
+                pages.append(nb)
     else:
         suivant = None
         precedent = None
@@ -268,7 +276,9 @@ def search(request,page=1):
         "destination": destination,
         "link":"&".join(link),
         "selected":selected,"suivant":suivant,"precedent":precedent,
-        "pages":range(1 , nb+1)
+        "pages":sorted(pages),
+        "nb":nb,
+        "next_limit":nb-1
         }
     return render(request,'tour_list.html',context)        
 
@@ -276,16 +286,26 @@ def get_operator(request, id, page=1):
     results = Operator.objects.get(id=id).tour_set.all()
     total = results.count()
     nb = total // 9 + 1
+    pages = []
     if nb > 1:
         selected = page
+        
+        pages.append(selected)
         if selected == 1:
             precedent = None
         else:
             precedent = selected - 1
+            pages.append(precedent)
+            if precedent != 1:
+                pages.append(1)
+
         if selected == nb:
             suivant = None
         else:
             suivant = selected + 1
+            pages.append(suivant)
+            if suivant != nb:
+                pages.append(nb)
     else:
         suivant = None
         precedent = None
@@ -313,7 +333,8 @@ def get_operator(request, id, page=1):
         "operators": Operator.objects.all(),
         "checked_operator":[id],
         "checked_operator_value":checked_operator,
-        "pages":range(1 , nb+1),
+        "pages":sorted(pages),
+        "nb":nb,
         "selected":selected,
         "suivant":suivant,
         "precedent":precedent, 
@@ -334,7 +355,8 @@ def get_operator(request, id, page=1):
         "max_price_value":max_price_value,
         "min_duration_value":min_duration_value,
         "max_duration_value":max_duration_value,
-        "sort_template":sort_template
+        "sort_template":sort_template,
+        "next_limit":nb-1
         }
     return render(request,'tour_list.html',context)
 
@@ -409,7 +431,8 @@ def get_categorie(request, id,page=1):
         "max_price_value":max_price_value,
         "min_duration_value":min_duration_value,
         "max_duration_value":max_duration_value,
-        "sort_template":sort_template
+        "sort_template":sort_template,
+        "next_limit":nb-1
     }
     return render(request,'tour_list.html',context)
 
