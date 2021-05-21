@@ -132,7 +132,7 @@ def register_process(request):
     else:
         user = User.objects.create_user(username,email,password)
         user.save()
-        return login(request,registration=True)
+        return login_page(request,registration=True)
 
 def logout_process(request):
     logout(request)
