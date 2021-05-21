@@ -4080,7 +4080,7 @@ ul.dot-blue-2 li:before { color: #022c54; }
 
 .full-copy { position: absolute; bottom: 50px; left: 50%; -webkit-transform: translateX(-50%); -moz-transform: translateX(-50%); -ms-transform: translateX(-50%); -o-transform: translateX(-50%); transform: translateX(-50%); color: #fff; font-size: 13px; letter-spacing: 1px; }
 
-.login-fullpage { position: relative; margin-top: 116px; margin-bottom: 116px; background: #fff; }
+.login-fullpage {position: relative;margin-top: 116px;margin-bottom: 116px;background: transparent;}
 
 .f-soon-title { font-size: 60px; line-height: 60px; font-weight: 700; text-transform: uppercase; text-align: center; letter-spacing: 10.5px; margin-bottom: 40px; }
 
@@ -7502,4 +7502,12 @@ img.operator-image {
 
 .operator-box {
     margin-bottom: 30px;
+}
+.login {
+  display: flex;
+  justify-content: center;
+}
+
+.login-box {
+  background: white;
 }
