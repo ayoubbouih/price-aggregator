@@ -138,6 +138,9 @@ def logout_process(request):
     logout(request)
     return home_page(request,logged_out=True)
 
+def profile(request):
+    return render(request, "profile.html")
+
 def page_not_found_view(request, exception=None):
     return render(request,"404.html")
 
