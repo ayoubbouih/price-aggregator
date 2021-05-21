@@ -8,7 +8,6 @@ import re
 from datetime import datetime
 from .models import Tour,City,categorie,Image,Depart,Operator,Subscriber,favourite
 from aggregator.settings import EMAIL_HOST_USER
-from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.db.models import Count
@@ -29,7 +28,7 @@ def subscribe(request):
 def newsletter_send(request):
     plaintext = get_template('email.html')
     htmly = get_template('email.html')
-    tours = Tour.objects.all().order_by("?")
+    tours = Tour.objects.all().order_by("-id")
     d = {"principal":tours[0],"tours":tours[1:4]}
     subject, from_email = 'Checkout our new tours', EMAIL_HOST_USER
     text_content = plaintext.render(d)
@@ -132,6 +131,8 @@ def register_process(request):
     else:
         user = User.objects.create_user(username,email,password)
         user.save()
+        s = Subscriber(None,email)
+        s.save()
         return login_page(request,registration=True)
 
 def logout_process(request):
@@ -490,9 +491,8 @@ def update(request):
         travlertalks(request,driver)
         print("ends in : ",datetime.now(), file=f,flush=True)
         driver.quit()
-        T = Tour.objects.annotate(departs_count=Count("depart"))
+        T = Tour.objects.annotate(departs_count=Count("depart"),images_count=Count("image"))
         T.filter(departs_count=0).delete()
-        T = Tour.objects.annotate(images_count=Count("image"))
         T.filter(images_count=0).delete()
         newsletter_send(request)
     context = {"scraping" : True}
