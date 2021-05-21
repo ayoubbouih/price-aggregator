@@ -171,10 +171,17 @@
                     {%endif%}
                     <ul class="cp_content color-3">
                     {%for page in pages%}
+                    
                         {%if page == selected%}
                             <li class="active"><a href="/categorie/{{categorie.id}}/{{page}}{%if sort_template%}?sort={{sort_template}}{%endif%}">{{page}}</a></li>
                         {%else%}
+                            {%if page == precedent and precedent > 2%}
+                            ...
+                            {%endif%}
                             <li ><a href="/categorie/{{categorie.id}}/{{page}}{%if sort_template%}?sort={{sort_template}}{%endif%}">{{page}}</a></li>
+                            {%if page == suivant and suivant != nb%}
+                            ...
+                            {%endif%}
                         {%endif%}
                     {%endfor%}
                     </ul>

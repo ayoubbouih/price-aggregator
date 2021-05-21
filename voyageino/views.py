@@ -342,18 +342,26 @@ def get_categorie(request, id,page=1):
     results = categorie.objects.get(id=id).tour_set.all()
     total = results.count()
     nb = total // 9 + 1
+    pages = []
     if nb > 1:
         selected = page
-
+        
+        pages.append(selected)
         if selected == 1:
             precedent = None
         else:
             precedent = selected - 1
+            pages.append(precedent)
+            if precedent != 1:
+                pages.append(1)
 
         if selected == nb:
             suivant = None
         else:
             suivant = selected + 1
+            pages.append(suivant)
+            if suivant != nb:
+                pages.append(nb)
     else:
         suivant = None
         precedent = None
@@ -374,13 +382,16 @@ def get_categorie(request, id,page=1):
     else:
         sort_template = sort = request.GET["sort"]
     results = results.order_by(sort)
+
+    
     context={
         'Tours':results[9 * (page - 1):9 * page],
         "operators": Operator.objects.all(),
         "cities":City.objects.all(),
         'categorie':categorie.objects.get(id=id),
         'categories':categorie.objects.all(),
-        "pages":range(1 , nb+1),
+        "pages":sorted(pages),
+        "nb":nb,
         "selected":selected,"suivant":suivant,"precedent":precedent,
         "min_price":min_price,
         "max_price":max_price,
